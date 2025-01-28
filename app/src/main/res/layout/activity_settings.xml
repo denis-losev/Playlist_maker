@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="16dp"
+            android:background="@null"
+            android:contentDescription="Назад"
+            android:src="@drawable/arrow_back" />
+
+        <TextView
+            android:id="@+id/settings_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="Заголовок Настройки"
+            android:gravity="center_vertical"
+            android:text="@string/settings"
+            android:textColor="#1A1B22"
+            android:textSize="22sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <Switch
+            android:id="@+id/dark_mode_switch"
+            android:layout_width="match_parent"
+            android:layout_height="61dp"
+            android:layout_gravity="end"
+            android:background="#FFFFFF"
+            android:text="@string/dark_theme"
+            android:textColor="#1A1B22"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/share_button"
+            android:layout_width="match_parent"
+            android:layout_height="61dp"
+            android:gravity="left|center"
+            android:text="@string/app_sharing"
+            android:textAllCaps="false"
+            android:textColor="#1A1B22"
+            android:textSize="16sp"
+            app:drawableEndCompat="@drawable/share" />
+
+        <TextView
+            android:id="@+id/support_button"
+            android:layout_width="match_parent"
+            android:layout_height="61dp"
+            android:gravity="left|center"
+            android:text="@string/support_chat"
+            android:textAllCaps="false"
+            android:textColor="#1A1B22"
+            android:textSize="16sp"
+            app:drawableEndCompat="@drawable/support" />
+
+        <TextView
+            android:id="@+id/agreement_button"
+            android:layout_width="match_parent"
+            android:layout_height="61dp"
+            android:gravity="left|center"
+            android:text="@string/user_agreement"
+            android:textAllCaps="false"
+            android:textColor="#1A1B22"
+            android:textSize="16sp"
+            app:drawableEndCompat="@drawable/arrow_forward" />
+    </LinearLayout>
+
+</LinearLayout>
