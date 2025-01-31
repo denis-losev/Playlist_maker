@@ -1,85 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main_view"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#3772E7"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <FrameLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:contentInsetLeft="0dp"
+        android:contentInsetStart="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"
+        app:title="@string/app_name"
+        app:titleTextColor="@color/white" />
 
-        <TextView
-            android:id="@+id/header_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginBottom="16pt"
-            android:text="@string/app_name"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp"
-            android:textStyle="bold" />
-
-    </FrameLayout>
-
-    <LinearLayout
+    <Button
+        android:id="@+id/search_button"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
+        android:layout_weight="1"
+        android:backgroundTint="@color/white"
+        android:gravity="center"
+        android:text="@string/search"
+        android:textAllCaps="false"
+        android:textColor="@color/icon_black"
+        android:textSize="22sp"
+        app:cornerRadius="16dp"
+        app:icon="@drawable/icon_search"
+        app:iconGravity="textStart"
+        app:iconTint="@color/black" />
 
-        <Button
-            android:id="@+id/search_button"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="16dp"
-            android:layout_weight="1"
-            android:backgroundTint="#FFFFFF"
-            android:gravity="center"
-            android:text="@string/search"
-            android:textAllCaps="false"
-            android:textColor="#1A1B22"
-            android:textSize="22sp"
-            app:cornerRadius="16dp"
-            app:icon="@drawable/icon_search"
-            app:iconGravity="textStart"
-            app:iconTint="@color/black" />
+    <Button
+        android:id="@+id/media_button"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
+        android:layout_weight="1"
+        android:backgroundTint="@color/white"
+        android:gravity="center"
+        android:text="@string/media"
+        android:textAllCaps="false"
+        android:textColor="@color/icon_black"
+        android:textSize="22sp"
+        app:cornerRadius="16dp"
+        app:icon="@drawable/icon_music"
+        app:iconGravity="textStart"
+        app:iconTint="@color/black" />
 
-        <Button
-            android:id="@+id/media_button"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="16dp"
-            android:layout_weight="1"
-            android:backgroundTint="#FFFFFF"
-            android:gravity="center"
-            android:text="@string/media"
-            android:textAllCaps="false"
-            android:textColor="#1A1B22"
-            android:textSize="22sp"
-            app:cornerRadius="16dp"
-            app:icon="@drawable/icon_music"
-            app:iconGravity="textStart"
-            app:iconTint="@color/black" />
+    <Button
+        android:id="@+id/settings_button"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
+        android:layout_weight="1"
+        android:backgroundTint="@color/white"
+        android:gravity="center"
+        android:text="@string/settings"
+        android:textAllCaps="false"
+        android:textColor="@color/icon_black"
+        android:textSize="22sp"
+        app:cornerRadius="16dp"
+        app:icon="@drawable/icon_settings"
+        app:iconGravity="textStart"
+        app:iconTint="@color/black" />
 
-        <Button
-            android:id="@+id/settings_button"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="16dp"
-            android:layout_weight="1"
-            android:backgroundTint="#FFFFFF"
-            android:gravity="center"
-            android:text="@string/settings"
-            android:textAllCaps="false"
-            android:textColor="#1A1B22"
-            android:textSize="22sp"
-            app:cornerRadius="16dp"
-            app:icon="@drawable/icon_settings"
-            app:iconGravity="textStart"
-            app:iconTint="@color/black" />
-
-    </LinearLayout>
 </LinearLayout>
