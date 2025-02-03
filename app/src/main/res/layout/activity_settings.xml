@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="0dp"
+        app:contentInsetStartWithNavigation="0dp"
+        app:navigationIcon="@drawable/arrow_back"
+        app:title="@string/settings"
+        app:titleTextColor="@color/icon_black" />
+
+    <Switch
+        android:id="@+id/dark_mode_switch"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="end"
+        android:background="#FFFFFF"
+        android:padding="16dp"
+        android:text="@string/dark_theme"
+        android:textColor="#1A1B22"
+        android:textSize="16sp"
+        android:thumbTint="@color/switch_thumb_colors"
+        android:trackTint="@color/switch_track_colors" />
+
+    <TextView
+        android:id="@+id/share_button"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="left|center"
+        android:padding="16dp"
+        android:text="@string/app_sharing"
+        android:textAllCaps="false"
+        android:textColor="#1A1B22"
+        android:textSize="16sp"
+        app:drawableEndCompat="@drawable/share" />
+
+    <TextView
+        android:id="@+id/support_button"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="left|center"
+        android:padding="16dp"
+        android:text="@string/support_chat"
+        android:textAllCaps="false"
+        android:textColor="#1A1B22"
+        android:textSize="16sp"
+        app:drawableEndCompat="@drawable/support" />
+
+    <TextView
+        android:id="@+id/agreement_button"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="left|center"
+        android:padding="16dp"
+        android:text="@string/user_agreement"
+        android:textAllCaps="false"
+        android:textColor="#1A1B22"
+        android:textSize="16sp"
+        app:drawableEndCompat="@drawable/arrow_forward" />
+
+</LinearLayout>
