@@ -7,5 +7,7 @@
         <item name="settingsIconsColor">@color/white</item>
         <item name="searchBarBackground">@color/white</item>
         <item name="searchBarItemColor">@color/black_russian_color</item>
+        <item name="trackTitleColor">@color/white</item>
+        <item name="trackSubtitleColor">@color/white</item>
     </style>
 </resources>

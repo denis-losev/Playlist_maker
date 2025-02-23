@@ -10,5 +10,7 @@
         <item name="settingsIconsColor">@color/aluminium_snow_color</item>
         <item name="searchBarBackground">@color/marble_color</item>
         <item name="searchBarItemColor">@color/aluminium_snow_color</item>
+        <item name="trackTitleColor">@color/black</item>
+        <item name="trackSubtitleColor">@color/aluminium_snow_color</item>
     </style>
 </resources>
