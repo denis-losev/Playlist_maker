@@ -19,39 +19,59 @@
         app:titleTextColor="?attr/textColorPrimary"
         tools:ignore="RtlSymmetry" />
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingTop="8dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="8dp">
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="4dp"
+        android:background="?attr/backgroundColorSecondary"
+        android:orientation="vertical"
+        android:paddingTop="8dp">
 
-        <EditText
-            android:id="@+id/search_bar"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:layout_marginHorizontal="8dp"
-            android:background="@android:color/transparent"
-            android:drawableStart="@drawable/icon_search"
-            android:drawablePadding="14dp"
-            android:drawableTint="?attr/searchBarItemColor"
-            android:fontFamily="@font/ys_display_regular"
-            android:hint="@string/search"
-            android:maxLines="1"
-            android:textColor="@color/black_russian_color"
-            android:textColorHint="?attr/searchBarItemColor"
-            android:textSize="16sp"
-            android:textCursorDrawable="@drawable/search_cursor_color"/>
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_search_view"
+            android:orientation="horizontal"
+            android:paddingStart="14dp">
 
-        <ImageView
-            android:id="@+id/clear_text"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_gravity="end"
-            android:layout_marginVertical="10dp"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/clear"
-            app:tint="?attr/searchBarItemColor" />
-    </FrameLayout>
+            <EditText
+                android:id="@+id/search_bar"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_marginHorizontal="8dp"
+                android:background="@android:color/transparent"
+                android:drawableStart="@drawable/icon_search"
+                android:drawablePadding="14dp"
+                android:drawableTint="?attr/searchBarItemColor"
+                android:fontFamily="@font/ys_display_regular"
+                android:hint="@string/search"
+                android:maxLines="1"
+                android:textColor="@color/black_russian_color"
+                android:textColorHint="?attr/searchBarItemColor"
+                android:textCursorDrawable="@drawable/search_cursor_color"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/clear_text"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="end"
+                android:layout_marginVertical="10dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/clear"
+                app:tint="?attr/searchBarItemColor" />
+        </FrameLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tracks_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+    </LinearLayout>
+
+
 </LinearLayout>
