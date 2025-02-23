@@ -5,6 +5,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.practicum.playlistmaker.R
 
 class TrackViewHolder(private val trackView: View) : RecyclerView.ViewHolder(trackView) {
@@ -27,7 +28,10 @@ class TrackViewHolder(private val trackView: View) : RecyclerView.ViewHolder(tra
         duration.text = model.trackTime
         Glide.with(trackView.context)
             .load(model.artworkUrl100)
+            .placeholder(R.drawable.cover_placeholder)
             .centerCrop()
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
             .into(cover)
     }
 }

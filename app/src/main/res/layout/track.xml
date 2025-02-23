@@ -13,10 +13,10 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginStart="13dp"
         android:layout_marginEnd="8dp"
         android:background="@drawable/rounded_image_2px"
-        android:clipToOutline="true"/>
+        android:clipToOutline="true"
+        app:srcCompat="@drawable/cover_placeholder"/>
 
     <LinearLayout
         android:layout_width="0dp"
@@ -46,7 +46,10 @@
                 android:layout_height="wrap_content"
                 android:textSize="11sp"
                 android:textColor="?attr/trackSubtitleColor"
-                tools:text="Artist" />
+                tools:text="Artist"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"/>
 
             <ImageView
                 android:layout_width="3dp"
@@ -73,9 +76,9 @@
         android:id="@+id/user_agreement_icon"
         android:layout_width="8dp"
         android:layout_height="14dp"
-        android:layout_marginEnd="12dp"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         app:srcCompat="@drawable/arrow_forward"
         app:tint="?attr/trackSubtitleColor" />
 

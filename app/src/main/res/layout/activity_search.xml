@@ -23,18 +23,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="end"
-        android:layout_marginHorizontal="16dp"
         android:layout_marginTop="4dp"
         android:background="?attr/backgroundColorSecondary"
         android:orientation="vertical"
-        android:paddingTop="8dp">
+        android:paddingTop="8dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_search_view"
             android:orientation="horizontal"
-            android:paddingStart="14dp">
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp">
 
             <EditText
                 android:id="@+id/search_bar"
