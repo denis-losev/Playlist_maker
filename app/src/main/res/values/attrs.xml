@@ -8,5 +8,7 @@
         <attr name="settingsIconsColor" format="color"/>
         <attr name="searchBarBackground" format="color"/>
         <attr name="searchBarItemColor" format="color"/>
+        <attr name="trackTitleColor" format="color"/>
+        <attr name="trackSubtitleColor" format="color"/>
     </declare-styleable>
 </resources>
