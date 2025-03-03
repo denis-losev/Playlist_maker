@@ -4,8 +4,8 @@
 
     <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
         <item name="backgroundColorPrimary">@color/dark_blue_color</item>
-        <item name="backgroundColorSecondary">@color/white</item>
-        <item name="textColorPrimary">@color/black_russian_color</item>
+        <item name="whiteToBlackRussian">@color/white</item>
+        <item name="blackRussianToWhite">@color/black_russian_color</item>
         <item name="arrowBackColor">@color/black_russian_color</item>
         <item name="settingsIconsColor">@color/aluminium_snow_color</item>
         <item name="searchBarBackground">@color/marble_color</item>
