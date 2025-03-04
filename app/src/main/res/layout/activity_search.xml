@@ -5,7 +5,7 @@
     android:id="@+id/main_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/backgroundColorSecondary"
+    android:background="?attr/whiteToBlackRussian"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
@@ -16,7 +16,7 @@
         app:contentInsetStartWithNavigation="0dp"
         app:navigationIcon="@drawable/arrow_back"
         app:title="@string/search"
-        app:titleTextColor="?attr/textColorPrimary"
+        app:titleTextColor="?attr/blackRussianToWhite"
         tools:ignore="RtlSymmetry" />
 
     <LinearLayout
@@ -24,10 +24,10 @@
         android:layout_height="match_parent"
         android:layout_gravity="end"
         android:layout_marginTop="4dp"
-        android:background="?attr/backgroundColorSecondary"
+        android:background="?attr/whiteToBlackRussian"
         android:orientation="vertical"
-        android:paddingTop="8dp"
         android:paddingStart="12dp"
+        android:paddingTop="8dp"
         android:paddingEnd="12dp">
 
         <FrameLayout
@@ -49,7 +49,9 @@
                 android:drawableTint="?attr/searchBarItemColor"
                 android:fontFamily="@font/ys_display_regular"
                 android:hint="@string/search"
+                android:imeOptions="actionDone"
                 android:maxLines="1"
+                android:singleLine="true"
                 android:textColor="@color/black_russian_color"
                 android:textColorHint="?attr/searchBarItemColor"
                 android:textCursorDrawable="@drawable/search_cursor_color"
@@ -73,6 +75,45 @@
             android:layout_marginTop="16dp"
             android:layout_weight="1"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+        <LinearLayout
+            android:id="@+id/error_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/error_emoji"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/interneterroremoji" />
+
+            <TextView
+                android:id="@+id/error_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/ys_display_medium"
+                android:gravity="center"
+                android:padding="22sp"
+                android:text="@string/internet_error_text"
+                android:textColor="?attr/blackRussianToWhite"
+                android:textSize="19sp" />
+
+            <Button
+                android:id="@+id/refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="?attr/blackRussianToWhite"
+                android:fontFamily="@font/ys_display_medium"
+                android:text="@string/refresh"
+                android:textAllCaps="false"
+                android:textColor="?attr/whiteToBlackRussian"
+                app:cornerRadius="54dp"
+                android:visibility="gone"/>
+
+        </LinearLayout>
     </LinearLayout>
 
 
