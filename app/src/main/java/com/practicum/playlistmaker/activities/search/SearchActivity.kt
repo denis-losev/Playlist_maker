@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.os.BundleCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
@@ -30,6 +31,7 @@ class SearchActivity : AppCompatActivity() {
 
     private val tracks = ArrayList<Track>()
     private var searchValue: String = EMPTY_STRING
+    private var currentErrorType: SearchResult? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var searchBarInput: EditText
     private lateinit var errorContainer: LinearLayout
@@ -71,11 +73,33 @@ class SearchActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(SEARCH_VALUE, searchValue)
+        outState.putParcelableArrayList(TRACKS_LIST, ArrayList(tracks))
+        outState.putBoolean(IS_RECYCLER_VISIBLE, recyclerView.isVisible)
+        outState.putBoolean(IS_ERROR_VISIBLE, errorContainer.isVisible)
+        outState.putBoolean(IS_REFRESH_VISIBLE, refreshButton.isVisible)
+        outState.putString(ERROR_TYPE, currentErrorType?.name)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         searchBarInput.setText(savedInstanceState.getString(SEARCH_VALUE))
+
+        val savedTracks: ArrayList<Track>? = BundleCompat.getParcelableArrayList(savedInstanceState, TRACKS_LIST, Track::class.java)
+        if (!savedTracks.isNullOrEmpty()) {
+            tracks.clear()
+            tracks.addAll(savedTracks)
+            adapter.tracks = tracks
+            recyclerView.adapter = adapter
+        }
+
+        recyclerView.isVisible = savedInstanceState.getBoolean(IS_RECYCLER_VISIBLE, false)
+        errorContainer.isVisible = savedInstanceState.getBoolean(IS_ERROR_VISIBLE, false)
+        refreshButton.isVisible = savedInstanceState.getBoolean(IS_REFRESH_VISIBLE, false)
+
+        savedInstanceState.getString(ERROR_TYPE)?.let { type ->
+            currentErrorType = SearchResult.valueOf(type)
+            showSearchResult(currentErrorType!!)
+        }
     }
 
     private fun searchButtonListener() {
@@ -175,6 +199,11 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         const val EMPTY_STRING = ""
         const val SEARCH_VALUE = "SEARCH_VALUE"
+        const val TRACKS_LIST = "TRACKS_LIST"
+        const val IS_RECYCLER_VISIBLE = "IS_RECYCLER_VISIBLE"
+        const val IS_ERROR_VISIBLE = "IS_ERROR_VISIBLE"
+        const val IS_REFRESH_VISIBLE = "IS_REFRESH_VISIBLE"
+        const val ERROR_TYPE = "ERROR_TYPE"
         const val BASE_URL = "https://itunes.apple.com"
     }
 }
