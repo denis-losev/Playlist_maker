@@ -63,6 +63,8 @@ class SearchActivity : AppCompatActivity() {
             finish()
         }
 
+        recyclerView.adapter = adapter
+
         refreshButton.setOnClickListener {
             searchRequest()
         }
@@ -90,9 +92,6 @@ class SearchActivity : AppCompatActivity() {
             tracks.clear()
             tracks.addAll(savedTracks)
             adapter.tracks = tracks
-            if (recyclerView.adapter == null) {
-                recyclerView.adapter = adapter
-            }
             adapter.notifyDataSetChanged()
         }
 
@@ -112,8 +111,9 @@ class SearchActivity : AppCompatActivity() {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 searchRequest()
                 true
+            } else {
+                false
             }
-            false
         }
     }
 
