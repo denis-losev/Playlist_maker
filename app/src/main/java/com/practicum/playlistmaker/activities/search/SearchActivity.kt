@@ -50,6 +50,7 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
         recyclerView = findViewById(R.id.tracks_list)
         searchBarInput = findViewById(R.id.search_bar)
         errorContainer = findViewById(R.id.error_container)
@@ -89,7 +90,10 @@ class SearchActivity : AppCompatActivity() {
             tracks.clear()
             tracks.addAll(savedTracks)
             adapter.tracks = tracks
-            recyclerView.adapter = adapter
+            if (recyclerView.adapter == null) {
+                recyclerView.adapter = adapter
+            }
+            adapter.notifyDataSetChanged()
         }
 
         recyclerView.isVisible = savedInstanceState.getBoolean(IS_RECYCLER_VISIBLE, false)
