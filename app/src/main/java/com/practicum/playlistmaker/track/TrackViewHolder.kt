@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.track
 
+import android.icu.text.SimpleDateFormat
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -7,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.practicum.playlistmaker.R
+import java.util.Locale
 
 class TrackViewHolder(private val trackView: View) : RecyclerView.ViewHolder(trackView) {
 
@@ -25,7 +27,7 @@ class TrackViewHolder(private val trackView: View) : RecyclerView.ViewHolder(tra
     fun bind(model: Track) {
         title.text = model.trackName
         artist.text = model.artistName
-        duration.text = model.trackTime
+        duration.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis)
         Glide.with(trackView.context)
             .load(model.artworkUrl100)
             .placeholder(R.drawable.cover_placeholder)

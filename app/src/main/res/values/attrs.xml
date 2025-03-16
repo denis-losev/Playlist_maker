@@ -2,8 +2,8 @@
 <resources>
     <declare-styleable name="Base.Theme.PlaylistMaker">
         <attr name="backgroundColorPrimary" format="color"/>
-        <attr name="backgroundColorSecondary" format="color"/>
-        <attr name="textColorPrimary" format="color"/>
+        <attr name="whiteToBlackRussian" format="color"/>
+        <attr name="blackRussianToWhite" format="color"/>
         <attr name="arrowBackColor" format="color"/>
         <attr name="settingsIconsColor" format="color"/>
         <attr name="searchBarBackground" format="color"/>

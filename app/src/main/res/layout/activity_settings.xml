@@ -5,7 +5,7 @@
     android:id="@+id/main_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/backgroundColorSecondary"
+    android:background="?attr/whiteToBlackRussian"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
@@ -16,14 +16,14 @@
         app:contentInsetStartWithNavigation="0dp"
         app:navigationIcon="@drawable/arrow_back"
         app:title="@string/settings"
-        app:titleTextColor="?attr/textColorPrimary"
+        app:titleTextColor="?attr/blackRussianToWhite"
         tools:ignore="RtlSymmetry" />
 
     <Switch
         android:id="@+id/dark_mode_switch"
         style="@style/SettingsActivityItemsStyles"
         android:layout_gravity="end"
-        android:background="?attr/backgroundColorSecondary"
+        android:background="?attr/whiteToBlackRussian"
         android:text="@string/dark_theme"
         android:thumbTint="@color/switch_thumb_colors"
         android:trackTint="@color/switch_track_colors"
