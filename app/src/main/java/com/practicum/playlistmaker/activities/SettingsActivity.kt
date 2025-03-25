@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {
@@ -16,7 +18,7 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_settings)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        val darkTheme = findViewById<Switch>(R.id.dark_mode_switch)
+        val themeSwitcher = findViewById<Switch>(R.id.themeSwitcher)
         val shareApp = findViewById<TextView>(R.id.share_button)
         val supportButton = findViewById<TextView>(R.id.support_button)
         val userAgreement = findViewById<TextView>(R.id.agreement_button)
@@ -24,6 +26,11 @@ class SettingsActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener {
             finish()
         }
+
+        themeSwitcher.setOnCheckedChangeListener { _, checked ->
+            (applicationContext as App).switchTheme(checked)
+        }
+        themeSwitcher.isChecked = (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
 
         shareApp.setOnClickListener {
             val shareLink = getText(R.string.android_dev_link)
