@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.activities.search
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -18,6 +19,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.os.BundleCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.iTunesApi.ITunesApi
@@ -45,6 +47,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchHistory: SearchHistory
     private lateinit var historyHeader: TextView
     private lateinit var clearHistoryButton: Button
+    private lateinit var playerActivity: Intent
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
@@ -209,6 +212,9 @@ class SearchActivity : AppCompatActivity() {
 
     private fun tapOnTrack(track: Track) {
         searchHistory.addTrackToHistory(track)
+        playerActivity = Intent(this, PlayerActivity::class.java)
+        playerActivity.putExtra(TRACK, Gson().toJson(track))
+        startActivity(playerActivity)
     }
 
     private fun changeState(state: SearchActivityState) {
@@ -257,9 +263,10 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private companion object {
+    companion object {
         const val EMPTY_STRING = ""
         const val SEARCH_VALUE = "SEARCH_VALUE"
+        const val TRACK = "TRACK"
         const val TRACKS_LIST = "TRACKS_LIST"
         const val IS_RECYCLER_VISIBLE = "IS_RECYCLER_VISIBLE"
         const val IS_ERROR_VISIBLE = "IS_ERROR_VISIBLE"
