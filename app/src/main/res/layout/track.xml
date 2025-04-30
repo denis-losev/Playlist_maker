@@ -58,7 +58,7 @@
                 android:layout_marginEnd="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
-                app:tint="?attr/trackSubtitleColor"
+                app:tint="@color/aluminium_snow_color"
                 app:srcCompat="@drawable/ellipse_1" />
 
             <TextView
@@ -66,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="11sp"
-                android:textColor="?attr/trackSubtitleColor"
+                android:textColor="@color/aluminium_snow_color"
                 tools:text="00:00" />
         </LinearLayout>
 
