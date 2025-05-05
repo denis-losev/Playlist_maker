@@ -3,6 +3,8 @@ package com.practicum.playlistmaker.activities.search
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -13,6 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -33,6 +36,10 @@ import retrofit2.Retrofit
 
 class SearchActivity : AppCompatActivity() {
 
+    private var isClickAllowed = true
+    private val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable { searchRequest() }
+    private lateinit var progressBar: ProgressBar
     private val tracks = ArrayList<Track>()
     private var searchValue: String = EMPTY_STRING
     private var currentErrorType: SearchActivityState? = null
@@ -74,6 +81,8 @@ class SearchActivity : AppCompatActivity() {
         searchHistory = SearchHistory((applicationContext as App).sharedPrefs)
         historyHeader = findViewById(R.id.search_history_title)
         clearHistoryButton = findViewById(R.id.clear_history_button)
+
+        progressBar = findViewById(R.id.progressBar)
 
         toolbar.setNavigationOnClickListener {
             finish()
@@ -168,34 +177,44 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun searchRequest() {
-        iTunesService.search(searchBarInput.text.toString())
-            .enqueue(object : Callback<TrackResponse> {
-                override fun onResponse(
-                    call: Call<TrackResponse>,
-                    response: Response<TrackResponse>
-                ) {
-                    if (response.code() == 200) {
-                        tracks.clear()
-                        if (response.body()?.results?.isNotEmpty() == true) {
-                            tracks.addAll(response.body()?.results!!)
-                            adapter.notifyDataSetChanged()
-                            changeState(SearchActivityState.SEARCH)
-                        } else if (response.body()?.results?.isEmpty() == true) {
-                            changeState(SearchActivityState.NOT_FOUND)
+        if (searchBarInput.text.isNotEmpty()) {
+
+            changeState(SearchActivityState.LOADING)
+
+            iTunesService.search(searchBarInput.text.toString())
+                .enqueue(object : Callback<TrackResponse> {
+                    override fun onResponse(
+                        call: Call<TrackResponse>,
+                        response: Response<TrackResponse>
+                    ) {
+                        if (response.code() == 200) {
+                            tracks.clear()
+                            if (response.body()?.results?.isNotEmpty() == true) {
+                                tracks.addAll(response.body()?.results!!)
+                                adapter.notifyDataSetChanged()
+                                changeState(SearchActivityState.SEARCH)
+                            } else if (response.body()?.results?.isEmpty() == true) {
+                                changeState(SearchActivityState.NOT_FOUND)
+                            }
                         }
                     }
-                }
 
-                override fun onFailure(call: Call<TrackResponse>, response: Throwable) {
-                    changeState(SearchActivityState.NO_INTERNET_CONNECTION)
-                }
-            })
+                    override fun onFailure(call: Call<TrackResponse>, response: Throwable) {
+                        changeState(SearchActivityState.NO_INTERNET_CONNECTION)
+                    }
+                })
+        }
     }
 
     private val inputWatcher = object : TextWatcher {
         override fun beforeTextChanged(input: CharSequence?, start: Int, before: Int, count: Int) {}
 
         override fun onTextChanged(input: CharSequence?, start: Int, before: Int, count: Int) {
+
+            if (!input.isNullOrEmpty()) {
+                searchDebounce()
+            }
+
             clearFieldButton.isVisible = !input.isNullOrEmpty()
 
             if (searchBarInput.hasFocus()
@@ -211,15 +230,32 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun tapOnTrack(track: Track) {
-        searchHistory.addTrackToHistory(track)
-        playerActivity = Intent(this, PlayerActivity::class.java)
-        playerActivity.putExtra(TRACK, Gson().toJson(track))
-        startActivity(playerActivity)
+        if (clickDebounce()) {
+            searchHistory.addTrackToHistory(track)
+            playerActivity = Intent(this, PlayerActivity::class.java)
+            playerActivity.putExtra(TRACK, Gson().toJson(track))
+            startActivity(playerActivity)
+        }
+    }
+
+    private fun clickDebounce() : Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({isClickAllowed = true}, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
     private fun changeState(state: SearchActivityState) {
         when (state) {
             SearchActivityState.SEARCH -> {
+                progressBar.visibility = View.GONE
                 errorContainer.visibility = View.GONE
                 refreshButton.visibility = View.GONE
                 adapter.tracks = tracks
@@ -230,6 +266,7 @@ class SearchActivity : AppCompatActivity() {
             }
 
             SearchActivityState.NOT_FOUND -> {
+                progressBar.visibility = View.GONE
                 currentErrorType = SearchActivityState.NOT_FOUND
                 recyclerView.visibility = View.GONE
                 refreshButton.visibility = View.GONE
@@ -241,6 +278,7 @@ class SearchActivity : AppCompatActivity() {
             }
 
             SearchActivityState.NO_INTERNET_CONNECTION -> {
+                progressBar.visibility = View.GONE
                 currentErrorType = SearchActivityState.NO_INTERNET_CONNECTION
                 recyclerView.visibility = View.GONE
                 errorContainer.visibility = View.VISIBLE
@@ -252,6 +290,7 @@ class SearchActivity : AppCompatActivity() {
             }
 
             SearchActivityState.HISTORY -> {
+                progressBar.visibility = View.GONE
                 errorContainer.visibility = View.GONE
                 refreshButton.visibility = View.GONE
                 adapter.tracks = searchHistory.getTracksHistory()
@@ -259,6 +298,15 @@ class SearchActivity : AppCompatActivity() {
                 recyclerView.visibility = View.VISIBLE
                 historyHeader.visibility = View.VISIBLE
                 clearHistoryButton.visibility = View.VISIBLE
+            }
+
+            SearchActivityState.LOADING -> {
+                progressBar.visibility = View.VISIBLE
+                recyclerView.visibility = View.GONE
+                errorContainer.visibility = View.GONE
+                refreshButton.visibility = View.GONE
+                historyHeader.visibility = View.GONE
+                clearHistoryButton.visibility = View.GONE
             }
         }
     }
@@ -274,5 +322,7 @@ class SearchActivity : AppCompatActivity() {
         const val IS_HISTORY_VISIBLE = "IS_HISTORY_VISIBLE"
         const val ERROR_TYPE = "ERROR_TYPE"
         const val BASE_URL = "https://itunes.apple.com"
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 }
