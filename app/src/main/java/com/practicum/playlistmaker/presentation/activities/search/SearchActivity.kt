@@ -1,5 +1,6 @@
-package com.practicum.playlistmaker.activities.search
+package com.practicum.playlistmaker.presentation.activities.search
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -11,7 +12,6 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
-import retrofit2.converter.gson.GsonConverterFactory
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -23,16 +23,13 @@ import androidx.core.os.BundleCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
-import com.practicum.playlistmaker.App
+import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.iTunesApi.ITunesApi
-import com.practicum.playlistmaker.iTunesApi.TrackResponse
-import com.practicum.playlistmaker.track.Track
-import com.practicum.playlistmaker.track.TrackAdapter
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
+import com.practicum.playlistmaker.domain.api.SearchHistoryRepository
+import com.practicum.playlistmaker.domain.api.TracksInteractor
+import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.presentation.TrackAdapter
+import com.practicum.playlistmaker.presentation.activities.player.PlayerActivity
 
 class SearchActivity : AppCompatActivity() {
 
@@ -51,23 +48,19 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var errorEmoji: ImageView
     private lateinit var errorMessage: TextView
     private lateinit var refreshButton: Button
-    private lateinit var searchHistory: SearchHistory
+    private lateinit var searchHistory: SearchHistoryRepository
     private lateinit var historyHeader: TextView
     private lateinit var clearHistoryButton: Button
     private lateinit var playerActivity: Intent
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val iTunesService = retrofit.create(ITunesApi::class.java)
+    private val tracksInteractor = Creator.provideTracksInteractor()
 
     private val adapter = TrackAdapter { tapOnTrack(it) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+        Creator.init(this)
 
         toolbar = findViewById(R.id.toolbar)
         recyclerView = findViewById(R.id.tracks_list)
@@ -78,7 +71,7 @@ class SearchActivity : AppCompatActivity() {
         errorMessage = findViewById(R.id.error_message)
         refreshButton = findViewById(R.id.refresh)
 
-        searchHistory = SearchHistory((applicationContext as App).sharedPrefs)
+        searchHistory = Creator.provideSearchHistoryRepository()
         historyHeader = findViewById(R.id.search_history_title)
         clearHistoryButton = findViewById(R.id.clear_history_button)
 
@@ -98,7 +91,7 @@ class SearchActivity : AppCompatActivity() {
         clearFieldButtonListener()
 
         searchBarInput.setOnFocusChangeListener { _, hasFocus ->
-            if (searchHistory.getTracksHistory().isNotEmpty() && hasFocus) {
+            if (searchHistory.getSearchHistory().isNotEmpty() && hasFocus) {
                 changeState(SearchActivityState.HISTORY)
             }
         }
@@ -157,7 +150,7 @@ class SearchActivity : AppCompatActivity() {
                 getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputService.hideSoftInputFromWindow(searchBarInput.windowToken, 0)
 
-            if (searchHistory.getTracksHistory().isNotEmpty()) {
+            if (searchHistory.getSearchHistory().isNotEmpty()) {
                 changeState(SearchActivityState.HISTORY)
             } else {
                 changeState(SearchActivityState.SEARCH)
@@ -179,28 +172,30 @@ class SearchActivity : AppCompatActivity() {
     private fun searchRequest() {
         if (searchBarInput.text.isNotEmpty()) {
 
+
             changeState(SearchActivityState.LOADING)
 
-            iTunesService.search(searchBarInput.text.toString())
-                .enqueue(object : Callback<TrackResponse> {
-                    override fun onResponse(
-                        call: Call<TrackResponse>,
-                        response: Response<TrackResponse>
-                    ) {
-                        if (response.code() == 200) {
-                            tracks.clear()
-                            if (response.body()?.results?.isNotEmpty() == true) {
-                                tracks.addAll(response.body()?.results!!)
+            tracksInteractor.searchTracks(
+                searchBarInput.text.toString(),
+                object : TracksInteractor.TracksConsumer {
+                    @SuppressLint("NotifyDataSetChanged")
+                    override fun consume(recievedTracks: List<Track>) {
+                        runOnUiThread {
+                            if (recievedTracks.isNotEmpty()) {
+                                tracks.clear()
+                                tracks.addAll(recievedTracks)
                                 adapter.notifyDataSetChanged()
                                 changeState(SearchActivityState.SEARCH)
-                            } else if (response.body()?.results?.isEmpty() == true) {
+                            } else if (recievedTracks.isEmpty()) {
                                 changeState(SearchActivityState.NOT_FOUND)
                             }
                         }
                     }
 
-                    override fun onFailure(call: Call<TrackResponse>, response: Throwable) {
-                        changeState(SearchActivityState.NO_INTERNET_CONNECTION)
+                    override fun consumeError(error: String?) {
+                        runOnUiThread {
+                            changeState(SearchActivityState.NO_INTERNET_CONNECTION)
+                        }
                     }
                 })
         }
@@ -219,7 +214,7 @@ class SearchActivity : AppCompatActivity() {
 
             if (searchBarInput.hasFocus()
                 && input.isNullOrEmpty()
-                && searchHistory.getTracksHistory().isNotEmpty()
+                && searchHistory.getSearchHistory().isNotEmpty()
             ) {
                 changeState(SearchActivityState.HISTORY)
             }
@@ -231,18 +226,18 @@ class SearchActivity : AppCompatActivity() {
 
     private fun tapOnTrack(track: Track) {
         if (clickDebounce()) {
-            searchHistory.addTrackToHistory(track)
+            searchHistory.addTrackHistory(track)
             playerActivity = Intent(this, PlayerActivity::class.java)
             playerActivity.putExtra(TRACK, Gson().toJson(track))
             startActivity(playerActivity)
         }
     }
 
-    private fun clickDebounce() : Boolean {
+    private fun clickDebounce(): Boolean {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
-            handler.postDelayed({isClickAllowed = true}, CLICK_DEBOUNCE_DELAY)
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
         }
         return current
     }
@@ -293,7 +288,7 @@ class SearchActivity : AppCompatActivity() {
                 progressBar.visibility = View.GONE
                 errorContainer.visibility = View.GONE
                 refreshButton.visibility = View.GONE
-                adapter.tracks = searchHistory.getTracksHistory()
+                adapter.tracks = searchHistory.getSearchHistory()
                 recyclerView.adapter = adapter
                 recyclerView.visibility = View.VISIBLE
                 historyHeader.visibility = View.VISIBLE
@@ -321,7 +316,6 @@ class SearchActivity : AppCompatActivity() {
         const val IS_REFRESH_VISIBLE = "IS_REFRESH_VISIBLE"
         const val IS_HISTORY_VISIBLE = "IS_HISTORY_VISIBLE"
         const val ERROR_TYPE = "ERROR_TYPE"
-        const val BASE_URL = "https://itunes.apple.com"
         private const val CLICK_DEBOUNCE_DELAY = 1000L
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }

@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.activities.search
+package com.practicum.playlistmaker.presentation.activities.player
 
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -14,8 +14,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.activities.search.SearchActivity.Companion.TRACK
-import com.practicum.playlistmaker.track.Track
+import com.practicum.playlistmaker.presentation.activities.search.SearchActivity.Companion.TRACK
+import com.practicum.playlistmaker.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -40,7 +40,10 @@ class PlayerActivity : AppCompatActivity() {
     private val updateTimerRunnable = object : Runnable {
         override fun run() {
             if (playerState == STATE_PLAYING) {
-                playDuration.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+                playDuration.text = SimpleDateFormat(
+                    "mm:ss",
+                    Locale.getDefault()
+                ).format(mediaPlayer.currentPosition)
                 handler.postDelayed(this, CLICK_DEBOUNCE_DELAY)
             }
         }
@@ -87,7 +90,9 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun getCoverImage() {
         Glide.with(artworkUrl100)
-            .load(track.artworkUrl100.replaceAfterLast("/", "512x512bb.jpg"))
+            .load(
+                track.getCoverArtwork()
+            )
             .centerInside()
             .transform(RoundedCorners(8))
             .placeholder(R.drawable.cover_placeholder)
@@ -100,7 +105,7 @@ class PlayerActivity : AppCompatActivity() {
         try {
             mediaPlayer.setDataSource(track.previewUrl)
             mediaPlayer.prepareAsync()
-            mediaPlayer.setOnPreparedListener{
+            mediaPlayer.setOnPreparedListener {
                 playBtn.isEnabled = true
                 playerState = STATE_PREPARED
             }
@@ -110,7 +115,8 @@ class PlayerActivity : AppCompatActivity() {
                 playerState = STATE_PREPARED
             }
         } catch (e: Exception) {
-            Toast.makeText(this, "Хьюстон, у нас проблемы с ${e.message}!", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Хьюстон, у нас проблемы с ${e.message}!", Toast.LENGTH_LONG)
+                .show()
             e.printStackTrace()
         }
 
@@ -130,7 +136,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun playbackControl() {
-        when(playerState) {
+        when (playerState) {
             STATE_PLAYING -> pausePlayer()
             STATE_PREPARED, STATE_PAUSED -> startPlayer()
         }

@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.track
+package com.practicum.playlistmaker.domain.models
 
 import android.icu.text.SimpleDateFormat
 import android.os.Parcelable
@@ -20,6 +20,8 @@ data class Track(
     val country: String,
     val previewUrl: String?
 ) : Parcelable {
+
+    fun getCoverArtwork() = artworkUrl100.replaceAfterLast('/',"512x512bb.jpg")
 
     fun getTrackDuration(): String {
         return SimpleDateFormat("mm:ss", Locale.getDefault()).format(this.trackTimeMillis)

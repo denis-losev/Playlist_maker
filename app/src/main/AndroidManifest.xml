@@ -15,22 +15,22 @@
         android:theme="@style/Theme.PlaylistMaker"
         tools:targetApi="31">
         <activity
-            android:name=".activities.search.SearchActivity"
+            android:name=".presentation.activities.search.SearchActivity"
             android:exported="false"
             android:theme="@style/Theme.PlaylistMaker" />
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name=".presentation.activities.settings.SettingsActivity"
             android:exported="false"
             android:theme="@style/Theme.PlaylistMaker" />
         <activity
-            android:name=".activities.MediaActivity"
+            android:name=".presentation.activities.media.MediaActivity"
             android:exported="false"
             android:theme="@style/Theme.PlaylistMaker" />
         <activity
-            android:name=".activities.search.PlayerActivity"
+            android:name=".presentation.activities.player.PlayerActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".presentation.activities.main_menu.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.PlaylistMaker">
             <intent-filter>
