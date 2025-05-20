@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.activities.search
+package com.practicum.playlistmaker.presentation.activities.search
 
 enum class SearchActivityState {
     SEARCH,

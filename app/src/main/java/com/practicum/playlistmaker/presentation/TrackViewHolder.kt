@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.track
+package com.practicum.playlistmaker.presentation
 
 import android.view.View
 import android.widget.ImageView
@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.models.Track
 
 class TrackViewHolder(private val trackView: View) : RecyclerView.ViewHolder(trackView) {
 

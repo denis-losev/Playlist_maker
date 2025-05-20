@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.activities
+package com.practicum.playlistmaker.presentation.activities.main_menu
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,7 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.activities.search.SearchActivity
+import com.practicum.playlistmaker.presentation.activities.media.MediaActivity
+import com.practicum.playlistmaker.presentation.activities.settings.SettingsActivity
+import com.practicum.playlistmaker.presentation.activities.search.SearchActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
