@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -25,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.ClickDebouncer
 import com.practicum.playlistmaker.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.domain.api.TracksInteractor
 import com.practicum.playlistmaker.domain.models.Track
@@ -33,9 +32,6 @@ import com.practicum.playlistmaker.presentation.activities.player.PlayerActivity
 
 class SearchActivity : AppCompatActivity() {
 
-    private var isClickAllowed = true
-    private val handler = Handler(Looper.getMainLooper())
-    private val searchRunnable = Runnable { searchRequest() }
     private lateinit var progressBar: ProgressBar
     private val tracks = ArrayList<Track>()
     private var searchValue: String = EMPTY_STRING
@@ -51,7 +47,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchHistory: SearchHistoryRepository
     private lateinit var historyHeader: TextView
     private lateinit var clearHistoryButton: Button
-    private lateinit var playerActivity: Intent
+    private val clickDebouncer = ClickDebouncer()
 
     private val tracksInteractor = Creator.provideTracksInteractor()
 
@@ -206,11 +202,12 @@ class SearchActivity : AppCompatActivity() {
 
         override fun onTextChanged(input: CharSequence?, start: Int, before: Int, count: Int) {
 
-            if (!input.isNullOrEmpty()) {
-                searchDebounce()
-            }
-
             clearFieldButton.isVisible = !input.isNullOrEmpty()
+
+            if (!input.isNullOrEmpty()) {
+                searchValue = input.toString()
+                searchRequest()
+            }
 
             if (searchBarInput.hasFocus()
                 && input.isNullOrEmpty()
@@ -225,26 +222,14 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun tapOnTrack(track: Track) {
-        if (clickDebounce()) {
+
+        clickDebouncer.tryClick {
             searchHistory.addTrackHistory(track)
-            playerActivity = Intent(this, PlayerActivity::class.java)
-            playerActivity.putExtra(TRACK, Gson().toJson(track))
-            startActivity(playerActivity)
+            val intent = Intent(this, PlayerActivity::class.java).apply {
+                putExtra(TRACK, Gson().toJson(track))
+            }
+            startActivity(intent)
         }
-    }
-
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
-        }
-        return current
-    }
-
-    private fun searchDebounce() {
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
     private fun changeState(state: SearchActivityState) {
