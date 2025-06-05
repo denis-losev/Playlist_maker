@@ -54,7 +54,7 @@
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/trackName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -71,7 +71,7 @@
             tools:text="Track textView" />
 
         <TextView
-            android:id="@+id/artist"
+            android:id="@+id/artistName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -84,7 +84,7 @@
             android:textSize="14sp"
             app:layout_constraintEnd_toStartOf="@+id/rightBorder"
             app:layout_constraintStart_toEndOf="@id/leftBorder"
-            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintTop_toBottomOf="@id/trackName"
             tools:text="Artist textView" />
 
         <ImageView
@@ -106,7 +106,7 @@
             android:src="@drawable/play_btn"
             app:layout_constraintEnd_toStartOf="@id/favourites_btn"
             app:layout_constraintStart_toEndOf="@id/add_to_playlist_btn"
-            app:layout_constraintTop_toBottomOf="@id/artist" />
+            app:layout_constraintTop_toBottomOf="@id/artistName" />
 
         <ImageView
             android:id="@+id/favourites_btn"
@@ -119,7 +119,7 @@
             app:layout_constraintTop_toTopOf="@+id/play_btn" />
 
         <TextView
-            android:id="@+id/play_duration"
+            android:id="@+id/currentPlayPosition"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -138,14 +138,14 @@
             android:layout_marginTop="30dp"
             android:text="@string/duration"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/play_duration" />
+            app:layout_constraintTop_toBottomOf="@id/currentPlayPosition" />
 
         <TextView
-            android:id="@+id/trackTimeValue"
+            android:id="@+id/trackDurationValue"
             style="@style/TrackInfoPlayerValueStyle"
             android:layout_marginTop="30dp"
             app:layout_constraintStart_toEndOf="@id/trackTimeTitle"
-            app:layout_constraintTop_toBottomOf="@id/play_duration"
+            app:layout_constraintTop_toBottomOf="@id/currentPlayPosition"
             tools:text="0:00" />
 
         <TextView
