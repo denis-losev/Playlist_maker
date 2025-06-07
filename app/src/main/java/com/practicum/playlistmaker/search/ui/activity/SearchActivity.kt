@@ -6,11 +6,9 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.google.gson.Gson
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.search.domain.model.Track
@@ -20,21 +18,16 @@ import com.practicum.playlistmaker.player.ui.activity.PlayerActivity
 import com.practicum.playlistmaker.search.SearchState
 import com.practicum.playlistmaker.search.domain.ClickDebouncer
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySearchBinding
     private val adapter = TrackAdapter { tapOnTrack(it) }
 
-    private val viewModel: SearchViewModel by viewModels {
-        SearchViewModel.getViewModelFactory(
-            Creator.provideTracksInteractor(),
-            Creator.provideSearchHistoryRepository()
-        )
-    }
+    private val viewModel: SearchViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Creator.init(this)
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
