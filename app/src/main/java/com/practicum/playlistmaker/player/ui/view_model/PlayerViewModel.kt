@@ -5,9 +5,6 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.PlayerState
 import com.practicum.playlistmaker.player.domain.PlayerInteractor
@@ -87,10 +84,5 @@ class PlayerViewModel(
 
     companion object {
         private const val DEBOUNCE_DELAY = 1000L
-        fun getViewModelFactory(playerInteractor: PlayerInteractor): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                PlayerViewModel(playerInteractor)
-            }
-        }
     }
 }

@@ -1,18 +1,19 @@
 package com.practicum.playlistmaker.settings.ui.activity
 
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.settings.ui.view_model.SettingsViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
-    private val viewModel: SettingsViewModel by viewModels {
-        SettingsViewModel.getViewModelFactory(Creator.provideSharingInteractor(this), Creator.provideSettingsInteractor())
+
+    private val viewModel: SettingsViewModel by viewModel {
+        parametersOf(this@SettingsActivity)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,5 +47,4 @@ class SettingsActivity : AppCompatActivity() {
             viewModel.openTerms()
         }
     }
-
 }
