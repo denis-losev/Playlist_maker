@@ -3,7 +3,7 @@ package com.practicum.playlistmaker.search.domain.impl
 import com.practicum.playlistmaker.search.Resource
 import com.practicum.playlistmaker.search.domain.SearchDebouncer
 import com.practicum.playlistmaker.search.domain.TracksInteractor
-import com.practicum.playlistmaker.search.data.TracksRepository
+import com.practicum.playlistmaker.search.domain.TracksRepository
 import java.util.concurrent.Executors
 
 class TracksInteractorImpl(

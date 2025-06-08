@@ -1,13 +1,13 @@
 package com.practicum.playlistmaker.di
 
 import android.app.Activity
-import com.practicum.playlistmaker.player.data.PlayerRepository
+import com.practicum.playlistmaker.player.domain.PlayerRepository
 import com.practicum.playlistmaker.player.data.impl.PlayerRepositoryImpl
-import com.practicum.playlistmaker.search.data.SearchHistoryRepository
-import com.practicum.playlistmaker.search.data.TracksRepository
+import com.practicum.playlistmaker.search.domain.SearchHistoryRepository
+import com.practicum.playlistmaker.search.domain.TracksRepository
 import com.practicum.playlistmaker.search.data.impl.SearchHistoryRepositoryImpl
 import com.practicum.playlistmaker.search.data.impl.TracksRepositoryImpl
-import com.practicum.playlistmaker.settings.data.SettingsRepository
+import com.practicum.playlistmaker.settings.domain.SettingsRepository
 import com.practicum.playlistmaker.settings.data.impl.SettingsRepositoryImpl
 import com.practicum.playlistmaker.sharing.data.ExternalNavigatorImpl
 import com.practicum.playlistmaker.sharing.domain.ExternalNavigator

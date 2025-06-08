@@ -3,7 +3,7 @@ package com.practicum.playlistmaker.player.data.impl
 import android.media.MediaPlayer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.practicum.playlistmaker.player.data.PlayerRepository
+import com.practicum.playlistmaker.player.domain.PlayerRepository
 
 class PlayerRepositoryImpl(
     private val mediaPlayer: MediaPlayer

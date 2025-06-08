@@ -14,7 +14,7 @@ import org.koin.dsl.module
 
 val interactorModule = module {
 
-    single<PlayerInteractor> {
+    factory<PlayerInteractor> {
         PlayerInteractorImpl(get())
     }
 
