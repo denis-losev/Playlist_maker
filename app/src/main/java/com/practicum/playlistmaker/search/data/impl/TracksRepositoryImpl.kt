@@ -4,7 +4,7 @@ import com.practicum.playlistmaker.search.Resource
 import com.practicum.playlistmaker.search.data.network.NetworkClient
 import com.practicum.playlistmaker.search.data.dto.TrackSearchResponse
 import com.practicum.playlistmaker.search.data.dto.TracksSearchRequest
-import com.practicum.playlistmaker.search.data.TracksRepository
+import com.practicum.playlistmaker.search.domain.TracksRepository
 import com.practicum.playlistmaker.search.domain.model.Track
 
 class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRepository {

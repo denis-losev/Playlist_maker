@@ -9,7 +9,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.search.SearchState
 import com.practicum.playlistmaker.search.ui.UiMessage
-import com.practicum.playlistmaker.search.data.SearchHistoryRepository
+import com.practicum.playlistmaker.search.domain.SearchHistoryRepository
 import com.practicum.playlistmaker.search.domain.TracksInteractor
 import com.practicum.playlistmaker.search.domain.model.Track
 
@@ -65,13 +65,5 @@ class SearchViewModel(
     fun clearHistory() {
         searchHistoryRepository.clearHistory()
         _state.value = SearchState.Init
-    }
-
-    companion object {
-        fun getViewModelFactory(tracksInteractor: TracksInteractor, searchHistoryRepository: SearchHistoryRepository): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                SearchViewModel(tracksInteractor, searchHistoryRepository)
-            }
-        }
     }
 }

@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.player.data
+package com.practicum.playlistmaker.player.domain
 
 import androidx.lifecycle.LiveData
 
