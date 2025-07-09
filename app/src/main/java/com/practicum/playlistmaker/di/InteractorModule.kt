@@ -8,6 +8,7 @@ import com.practicum.playlistmaker.search.domain.impl.TracksInteractorImpl
 import com.practicum.playlistmaker.settings.domain.SettingsInteractor
 import com.practicum.playlistmaker.settings.domain.impl.SettingsInteractorImpl
 import com.practicum.playlistmaker.sharing.SharingInteractor
+import com.practicum.playlistmaker.sharing.domain.ExternalNavigator
 import com.practicum.playlistmaker.sharing.domain.impl.SharingInteractorImpl
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
@@ -22,8 +23,9 @@ val interactorModule = module {
         TracksInteractorImpl(get())
     }
 
-    single<SharingInteractor> { (activity: Activity) ->
-        SharingInteractorImpl(get { parametersOf(activity) }, activity)
+    factory <SharingInteractor> { (activity: Activity) ->
+        val navigator: ExternalNavigator = get { parametersOf(activity) }
+        SharingInteractorImpl(navigator)
     }
 
     single<SettingsInteractor> {
