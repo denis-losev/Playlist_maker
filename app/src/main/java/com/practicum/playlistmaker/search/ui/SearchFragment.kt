@@ -11,10 +11,8 @@ import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import com.google.gson.Gson
 import com.practicum.playlistmaker.Constants.TRACK
-import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.player.ui.activity.PlayerActivity
-import com.practicum.playlistmaker.search.SearchState
 import com.practicum.playlistmaker.search.domain.ClickDebouncer
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
@@ -70,14 +68,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     private fun setupObservers() {
         viewModel.getState().observe(viewLifecycleOwner) { state ->
-            when (state) {
-                SearchState.Init -> changeState(state)
-                is SearchState.EmptyResult -> changeState(state)
-                is SearchState.Error -> changeState(state)
-                is SearchState.History -> changeState(state)
-                SearchState.Loading -> changeState(state)
-                is SearchState.SearchResult -> changeState(state)
-            }
+            render(state.toUiState(requireContext()))
         }
     }
 
@@ -93,44 +84,48 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         override fun afterTextChanged(input: Editable?) {}
     }
 
-    private fun changeState(state: SearchState) {
-        with(binding) {
-            progressBar.visibility = View.GONE
-            errorContainer.visibility = View.GONE
-            refresh.visibility = View.GONE
-            tracksList.visibility = View.GONE
-            searchHistoryTitle.visibility = View.GONE
-            clearHistoryButton.visibility = View.GONE
+    private fun render(uiState: SearchUiState) = with(binding) {
+        hideAll()
 
-            when (state) {
-                SearchState.Init -> return
-                is SearchState.EmptyResult -> {
-                    errorContainer.visibility = View.VISIBLE
-                    errorEmoji.setImageResource(R.drawable.error404emoji)
-                    errorMessage.text = state.message.resolve(requireContext())
-                }
-                is SearchState.History -> {
-                    adapter.tracks = ArrayList(state.tracks)
-                    adapter.notifyDataSetChanged()
-                    tracksList.visibility = View.VISIBLE
-                    searchHistoryTitle.visibility = View.VISIBLE
-                    clearHistoryButton.visibility = View.VISIBLE
-                }
-                SearchState.Loading -> progressBar.visibility = View.VISIBLE
-                is SearchState.SearchResult -> {
-                    adapter.tracks = state.tracks as ArrayList<Track>
-                    adapter.notifyDataSetChanged()
-
-                    tracksList.visibility = View.VISIBLE
-                }
-                is SearchState.Error -> {
-                    errorContainer.visibility = View.VISIBLE
-                    refresh.visibility = View.VISIBLE
-                    errorEmoji.setImageResource(R.drawable.interneterroremoji)
-                    errorMessage.text = state.errorMessage.resolve(requireContext())
-                }
-            }
+        when (uiState) {
+            SearchUiState.Init -> Unit
+            SearchUiState.Loading -> progressBar.isVisible = true
+            is SearchUiState.ShowError -> showError(uiState)
+            is SearchUiState.ShowHistory -> showHistory(uiState.tracks)
+            is SearchUiState.ShowTracks -> showSearchResult(uiState.tracks)
         }
+    }
+
+    private fun hideAll() {
+        with(binding) {
+            progressBar.isVisible = false
+            errorContainer.isVisible = false
+            refresh.isVisible = false
+            tracksList.isVisible = false
+            searchHistoryTitle.isVisible = false
+            clearHistoryButton.isVisible = false
+        }
+    }
+
+    private fun showError(uiState: SearchUiState.ShowError) = with(binding) {
+        errorContainer.isVisible = true
+        refresh.isVisible = uiState.showRefresh
+        errorEmoji.setImageResource(uiState.emojiRes)
+        errorMessage.text = uiState.message
+    }
+
+    private fun showHistory(tracks: List<Track>) = with(binding) {
+        adapter.tracks = ArrayList(tracks)
+        adapter.notifyDataSetChanged()
+        tracksList.isVisible = true
+        searchHistoryTitle.isVisible = true
+        clearHistoryButton.isVisible = true
+    }
+
+    private fun showSearchResult(tracks: List<Track>) = with(binding) {
+        adapter.tracks = ArrayList(tracks)
+        adapter.notifyDataSetChanged()
+        tracksList.isVisible = true
     }
 
     private fun tapOnTrack(track: Track) {

@@ -28,6 +28,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/navigation_items"
-        android:background="?attr/whiteToBlackRussian" />
+        android:background="?attr/whiteToBlackRussian"
+        app:itemTextColor="@color/bottom_navigation_menu_item_color"
+        app:itemIconTint="@color/bottom_navigation_menu_item_color"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
