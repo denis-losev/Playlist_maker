@@ -19,7 +19,7 @@ val viewModelModule = module {
 
     viewModel { (activity: Activity) ->
         SettingsViewModel(
-            sharingInteractor = get { parametersOf(activity) },
+            sharingInteractor = get{parametersOf(activity)},
             settingsInteractor = get()
         )
     }

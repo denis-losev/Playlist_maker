@@ -2,12 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/media_activity"
+    android:id="@+id/media_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/whiteToBlackRussian"
     android:orientation="vertical"
-    tools:context=".media.ui.activity.MediaActivity">
+    tools:context=".media.ui.fragments.MediaFragment">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -15,7 +15,6 @@
         android:layout_height="wrap_content"
         android:paddingStart="0dp"
         app:contentInsetStartWithNavigation="0dp"
-        app:navigationIcon="@drawable/arrow_back"
         app:title="@string/media"
         app:titleTextColor="?attr/blackRussianToWhite"
         tools:ignore="RtlSymmetry" />

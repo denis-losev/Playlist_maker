@@ -3,15 +3,12 @@ package com.practicum.playlistmaker.search.ui.view_model
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.search.SearchState
-import com.practicum.playlistmaker.search.ui.UiMessage
+import com.practicum.playlistmaker.search.ui.SearchState
 import com.practicum.playlistmaker.search.domain.SearchHistoryRepository
 import com.practicum.playlistmaker.search.domain.TracksInteractor
 import com.practicum.playlistmaker.search.domain.model.Track
+import com.practicum.playlistmaker.search.ui.UiMessage
 
 class SearchViewModel(
     private val tracksInteractor: TracksInteractor,
@@ -39,13 +36,20 @@ class SearchViewModel(
 
     private fun searchRequest() {
         _state.value = SearchState.Loading
+
         tracksInteractor.searchTracks(searchText, object : TracksInteractor.TracksConsumer {
             override fun consume(recievedTracks: List<Track>?, errorMessage: String?) {
                 when {
-                    !errorMessage.isNullOrEmpty() -> _state.postValue(SearchState.Error(UiMessage.Resource(R.string.internet_error_text)))
-                    recievedTracks.isNullOrEmpty() -> _state.postValue(
-                        SearchState.EmptyResult(
-                        UiMessage.Resource(R.string.not_found_error_text)))
+                    !errorMessage.isNullOrEmpty() ->
+                        _state.postValue(SearchState.Error(UiMessage.Resource(R.string.internet_error_text)))
+
+                    recievedTracks.isNullOrEmpty() ->
+                        _state.postValue(
+                            SearchState.EmptyResult(
+                                UiMessage.Resource(R.string.not_found_error_text)
+                            )
+                        )
+
                     else -> _state.postValue(SearchState.SearchResult(recievedTracks))
                 }
             }

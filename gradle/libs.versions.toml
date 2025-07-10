@@ -1,5 +1,5 @@
 [versions]
-agp = "8.10.1"
+agp = "8.11.0"
 kotlin = "1.9.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -19,6 +19,12 @@ activityKtx = "1.6.1"
 koinAndroid = "3.3.0"
 fragmentKtx = "1.5.5"
 viewpager2 = "1.0.0"
+adapterdelegates4KotlinDsl = "4.3.2"
+adapterdelegates4KotlinDslViewbinding = "4.3.2"
+navigationFragmentKtx = "2.5.3"
+navigationUiKtx = "2.5.3"
+fragmentKtxVersion = "1.5.6"
+materialVersion = "1.8.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,6 +45,12 @@ androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", ve
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koinAndroid" }
 androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtx" }
 androidx-viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
+adapterdelegates4-kotlin-dsl = { group = "com.hannesdorfmann", name = "adapterdelegates4-kotlin-dsl", version.ref = "adapterdelegates4KotlinDsl" }
+adapterdelegates4-kotlin-dsl-viewbinding = { group = "com.hannesdorfmann", name = "adapterdelegates4-kotlin-dsl-viewbinding", version.ref = "adapterdelegates4KotlinDslViewbinding" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
+fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtxVersion" }
+google-material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
 
 
 [plugins]
