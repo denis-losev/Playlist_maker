@@ -43,6 +43,8 @@ class SearchHistoryRepositoryImpl(private val sharedPrefs: SharedPreferences) :
         sharedPrefs.edit()
             .remove(TRACKS_LIST_HISTORY)
             .apply()
+
+        tracksListHistory.clear()
     }
 
     companion object {

@@ -11,7 +11,7 @@ class RetrofitNetworkClient(
     private val context: Context
 ) : NetworkClient {
 
-    override fun doRequest(dto: Any): Response {
+    override suspend fun doRequest(dto: Any): Response {
         if (!isConnected()) {
             return Response().apply { resultCode = -1 }
         }
@@ -19,13 +19,14 @@ class RetrofitNetworkClient(
             return Response().apply { resultCode = 400 }
         }
 
-        val response = apiService.searchTracks(dto.searchText).execute()
-        val body = response.body()
-        return if (body != null) {
-            body.apply { resultCode = response.code() }
-        } else {
-            Response().apply { resultCode = response.code() }
+        return try {
+            val response = apiService.searchTracks(dto.searchText)
+            response.apply { resultCode = 200 }
+        } catch (e: Throwable) {
+            Response().apply { resultCode = 500 }
         }
+
+
     }
 
     private fun isConnected(): Boolean {

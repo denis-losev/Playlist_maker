@@ -1,13 +1,15 @@
 package com.practicum.playlistmaker.player.ui.view_model
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.PlayerState
 import com.practicum.playlistmaker.player.domain.PlayerInteractor
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor
@@ -24,22 +26,7 @@ class PlayerViewModel(
     fun getState(): LiveData<PlayerState> = _state
 
     private var isPlaying = false
-
-    private val handler = Handler(Looper.getMainLooper())
-
-    private val updateTimerRunnable = object : Runnable {
-        override fun run() {
-            if (isPlaying) {
-                _state.postValue(
-                    PlayerState.Playing(
-                        playingTrack,
-                        playerInteractor.getCurrentPosition()
-                    )
-                )
-                handler.postDelayed(this, DEBOUNCE_DELAY)
-            }
-        }
-    }
+    private var progressJob: Job? = null
 
     fun preparePlayer(track: Track) {
         playingTrack = track
@@ -54,14 +41,14 @@ class PlayerViewModel(
         isPlaying = true
         playerInteractor.play()
         _state.postValue(PlayerState.Playing(playingTrack, playerInteractor.getCurrentPosition()))
-        handler.post(updateTimerRunnable)
+        startProgressUpdater()
     }
 
     private fun pausePlaying() {
         isPlaying = false
         playerInteractor.pause()
         _state.postValue(PlayerState.Paused(playingTrack, playerInteractor.getCurrentPosition()))
-        handler.removeCallbacks(updateTimerRunnable)
+        stopProgressUpdater()
     }
 
     fun togglePlayback() {
@@ -72,6 +59,27 @@ class PlayerViewModel(
     private fun onCompletion() {
         isPlaying = false
         _state.postValue(PlayerState.Completed(playingTrack))
+        stopProgressUpdater()
+    }
+
+    private fun startProgressUpdater() {
+        stopProgressUpdater()
+        progressJob = viewModelScope.launch {
+            while (isPlaying) {
+                delay(DEBOUNCE_DELAY)
+                _state.postValue(
+                    PlayerState.Playing(
+                        playingTrack,
+                        playerInteractor.getCurrentPosition()
+                    )
+                )
+            }
+        }
+    }
+
+    private fun stopProgressUpdater() {
+        progressJob?.cancel()
+        progressJob = null
     }
 
     override fun onCleared() {
@@ -79,10 +87,10 @@ class PlayerViewModel(
         playerInteractor.release()
         playerInteractor.onPrepared.removeObserver { onPrepared() }
         playerInteractor.onCompletion.removeObserver { onCompletion() }
-        handler.removeCallbacks(updateTimerRunnable)
+        stopProgressUpdater()
     }
 
     companion object {
-        private const val DEBOUNCE_DELAY = 1000L
+        private const val DEBOUNCE_DELAY = 300L
     }
 }

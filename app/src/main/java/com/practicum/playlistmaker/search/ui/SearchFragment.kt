@@ -9,11 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.practicum.playlistmaker.Constants.TRACK
 import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.player.ui.activity.PlayerActivity
-import com.practicum.playlistmaker.search.domain.ClickDebouncer
+import com.practicum.playlistmaker.utils.debouncer.ClickDebouncer
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 import com.practicum.playlistmaker.utils.BindingFragment
@@ -22,7 +23,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     private val viewModel: SearchViewModel by viewModel()
-    private val clickDebouncer = ClickDebouncer()
+    private lateinit var clickDebouncer: ClickDebouncer
 
     private val adapter = TrackAdapter { tapOnTrack(it) }
 
@@ -35,7 +36,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        clickDebouncer = ClickDebouncer(coroutineScope = viewLifecycleOwner.lifecycleScope)
         setupUI()
         setupObservers()
     }
