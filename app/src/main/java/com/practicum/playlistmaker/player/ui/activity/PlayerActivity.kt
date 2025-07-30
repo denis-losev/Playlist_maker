@@ -69,12 +69,13 @@ class PlayerActivity : AppCompatActivity() {
                 is PlayerState.Default -> {
                     binding.playBtn.isEnabled = false
                     binding.playBtn.setImageResource(R.drawable.play_btn)
-                    binding.trackDurationValue.text = ZERO_TIMER
+                    binding.currentPlayPosition.text = ZERO_TIMER
                 }
 
                 is PlayerState.Prepared -> {
                     binding.playBtn.isEnabled = true
                     binding.playBtn.setImageResource(R.drawable.play_btn)
+                    binding.currentPlayPosition.text = ZERO_TIMER
                 }
 
                 is PlayerState.Playing -> {
@@ -89,6 +90,7 @@ class PlayerActivity : AppCompatActivity() {
 
                 is PlayerState.Completed -> {
                     binding.playBtn.setImageResource(R.drawable.play_btn)
+                    binding.currentPlayPosition.text = ZERO_TIMER
                 }
             }
         }
