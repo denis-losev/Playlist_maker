@@ -1,6 +1,9 @@
 package com.practicum.playlistmaker.di
 
 import android.app.Activity
+import com.practicum.playlistmaker.db.data.converters.TrackDbConvertor
+import com.practicum.playlistmaker.db.data.impl.FavoriteRepositoryImpl
+import com.practicum.playlistmaker.db.domain.FavoriteRepository
 import com.practicum.playlistmaker.player.domain.PlayerRepository
 import com.practicum.playlistmaker.player.data.impl.PlayerRepositoryImpl
 import com.practicum.playlistmaker.search.domain.SearchHistoryRepository
@@ -24,7 +27,7 @@ val repositoryModule = module {
     }
 
     factory<TracksRepository> {
-        TracksRepositoryImpl(get())
+        TracksRepositoryImpl(get(), get())
     }
 
     factory<SettingsRepository> {
@@ -33,5 +36,11 @@ val repositoryModule = module {
 
     factory<ExternalNavigator> { (activity: Activity) ->
         ExternalNavigatorImpl(activity)
+    }
+
+    factory { TrackDbConvertor() }
+
+    single<FavoriteRepository> {
+        FavoriteRepositoryImpl(get(), get())
     }
 }

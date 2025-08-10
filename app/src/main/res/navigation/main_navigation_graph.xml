@@ -9,7 +9,15 @@
         android:id="@+id/mediaFragment"
         android:name="com.practicum.playlistmaker.media.ui.fragments.MediaFragment"
         android:label="media_fragment"
-        tools:layout="@layout/fragment_media" />
+        tools:layout="@layout/fragment_media">
+        <action
+            android:id="@+id/action_mediaFragment_to_playerActivity"
+            app:destination="@id/playerActivity">
+            <argument
+                android:name="trackId"
+                app:argType="integer" />
+        </action>
+    </fragment>
     <activity
         android:id="@+id/playerActivity"
         android:name="com.practicum.playlistmaker.player.ui.activity.PlayerActivity"
