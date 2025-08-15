@@ -9,4 +9,6 @@ object Constants {
 
     const val TRACK = "TRACK"
     const val ZERO_TIMER = "00:00"
+
+    const val TRACK_TABLE = "track_table"
 }

@@ -60,6 +60,19 @@ class PlayerActivity : AppCompatActivity() {
             playBtn.setOnClickListener {
                 viewModel.togglePlayback()
             }
+
+            favouritesBtn.setOnClickListener {
+                viewModel.toggleFavoriteFlag()
+                updateFavoriteButton(track.isFavorite)
+            }
+        }
+    }
+
+    private fun updateFavoriteButton(isFavorite: Boolean) {
+        if (isFavorite) {
+            binding.favouritesBtn.setImageResource(R.drawable.added_fav_btn)
+        } else {
+            binding.favouritesBtn.setImageResource(R.drawable.add_to_fav_btn)
         }
     }
 
@@ -76,6 +89,7 @@ class PlayerActivity : AppCompatActivity() {
                     binding.playBtn.isEnabled = true
                     binding.playBtn.setImageResource(R.drawable.play_btn)
                     binding.currentPlayPosition.text = ZERO_TIMER
+                    updateFavoriteButton(state.track.isFavorite)
                 }
 
                 is PlayerState.Playing -> {
@@ -94,6 +108,7 @@ class PlayerActivity : AppCompatActivity() {
                 }
             }
         }
+
     }
 
     fun formatTime(millis: Int): String {

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.db.domain.FavoriteInteractor
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.PlayerState
 import com.practicum.playlistmaker.player.domain.PlayerInteractor
@@ -12,7 +13,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
-    private val playerInteractor: PlayerInteractor
+    private val playerInteractor: PlayerInteractor,
+    private val favoriteInteractor: FavoriteInteractor
 ) : ViewModel() {
 
     init {
@@ -30,7 +32,11 @@ class PlayerViewModel(
 
     fun preparePlayer(track: Track) {
         playingTrack = track
-        playerInteractor.prepare(playingTrack)
+        viewModelScope.launch {
+            val isFavorite = favoriteInteractor.isFavorite(track.trackId)
+            playingTrack.isFavorite = isFavorite
+            playerInteractor.prepare(playingTrack)
+        }
     }
 
     private fun onPrepared() {
@@ -80,6 +86,21 @@ class PlayerViewModel(
     private fun stopProgressUpdater() {
         progressJob?.cancel()
         progressJob = null
+    }
+
+    fun toggleFavoriteFlag() {
+        val newFav = !playingTrack.isFavorite
+        playingTrack.isFavorite = newFav
+
+        _state.postValue(PlayerState.Prepared(playingTrack))
+
+        viewModelScope.launch {
+            if (newFav) {
+                favoriteInteractor.addTrack(playingTrack)
+            } else {
+                favoriteInteractor.deleteTrack(playingTrack)
+            }
+        }
     }
 
     override fun onCleared() {

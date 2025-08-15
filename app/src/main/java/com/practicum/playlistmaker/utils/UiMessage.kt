@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.search.ui
+package com.practicum.playlistmaker.utils
 
 import android.content.Context
 import androidx.annotation.StringRes

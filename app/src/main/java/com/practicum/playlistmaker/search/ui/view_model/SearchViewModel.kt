@@ -9,7 +9,7 @@ import com.practicum.playlistmaker.search.ui.SearchState
 import com.practicum.playlistmaker.search.domain.SearchHistoryRepository
 import com.practicum.playlistmaker.search.domain.TracksInteractor
 import com.practicum.playlistmaker.search.domain.model.Track
-import com.practicum.playlistmaker.search.ui.UiMessage
+import com.practicum.playlistmaker.utils.UiMessage
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

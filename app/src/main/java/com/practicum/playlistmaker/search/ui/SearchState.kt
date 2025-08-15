@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.search.ui
 
 import com.practicum.playlistmaker.search.domain.model.Track
+import com.practicum.playlistmaker.utils.UiMessage
 
 sealed class SearchState {
     object Init : SearchState()
