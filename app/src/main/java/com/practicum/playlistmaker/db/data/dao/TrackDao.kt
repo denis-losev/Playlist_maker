@@ -19,7 +19,7 @@ interface TrackDao {
     suspend fun deleteTrack(track: TrackEntity)
 
     @Query("SELECT * FROM $TRACK_TABLE ORDER BY addedAt DESC")
-    suspend fun getTracks(): Flow<List<TrackEntity>>
+    fun getTracks(): Flow<List<TrackEntity>>
 
     @Query("SELECT trackId FROM $TRACK_TABLE")
     suspend fun getTracksId(): List<Int>

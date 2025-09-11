@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Base.Theme.PlaylistMaker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-    </style>
+
+    <style name="Base.Theme.PlaylistMaker" parent="Theme.MaterialComponents.DayNight.NoActionBar"></style>
 
     <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
         <item name="backgroundColorPrimary">@color/dark_blue_color</item>
@@ -12,5 +12,6 @@
         <item name="searchBarItemColor">@color/aluminium_snow_color</item>
         <item name="trackTitleColor">@color/black</item>
         <item name="trackSubtitleColor">@color/aluminium_snow_color</item>
+        <item name="aluminiumSnowToBlack">@color/aluminium_snow_color</item>
     </style>
 </resources>

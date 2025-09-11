@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="4dp"
+    android:paddingVertical="8dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/playlistCoverCard"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="16dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="8dp"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeColor="@color/aluminium_snow_color"
+        app:strokeWidth="1dp">
+
+        <ImageView
+            android:id="@+id/playlistCoverImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/rectangle_shape_rounded_8dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/cover_placeholder" />
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/playlistName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@id/playlistCoverCard"
+        app:layout_constraintStart_toStartOf="@id/playlistCoverCard"
+        app:layout_constraintTop_toBottomOf="@+id/playlistCoverCard"
+        tools:text="Название плейлиста" />
+
+    <TextView
+        android:id="@+id/tracksCount"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@id/playlistName"
+        app:layout_constraintStart_toStartOf="@id/playlistName"
+        app:layout_constraintTop_toBottomOf="@+id/playlistName"
+        tools:text="Количество треков" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

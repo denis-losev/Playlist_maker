@@ -4,6 +4,7 @@
         <attr name="backgroundColorPrimary" format="color"/>
         <attr name="whiteToBlackRussian" format="color"/>
         <attr name="blackRussianToWhite" format="color"/>
+        <attr name="aluminiumSnowToBlack" format="color"/>
         <attr name="arrowBackColor" format="color"/>
         <attr name="settingsIconsColor" format="color"/>
         <attr name="searchBarBackground" format="color"/>

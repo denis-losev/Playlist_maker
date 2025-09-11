@@ -1,7 +1,7 @@
-package com.practicum.playlistmaker.db.domain.impl
+package com.practicum.playlistmaker.db.domain.favorites.impl
 
-import com.practicum.playlistmaker.db.domain.FavoriteInteractor
-import com.practicum.playlistmaker.db.domain.FavoriteRepository
+import com.practicum.playlistmaker.db.domain.favorites.FavoriteInteractor
+import com.practicum.playlistmaker.db.domain.favorites.FavoriteRepository
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.flow.Flow
 

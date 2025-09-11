@@ -5,15 +5,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.practicum.playlistmaker.Constants.TRACK
+import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentFavoritesBinding
-import com.practicum.playlistmaker.media.ui.FavoritesUiState
-import com.practicum.playlistmaker.media.ui.toUiState
-import com.practicum.playlistmaker.media.ui.view_model.FavoritesViewModel
-import com.practicum.playlistmaker.player.ui.activity.PlayerActivity
+import com.practicum.playlistmaker.media.ui.state.favorites.FavoritesUiState
+import com.practicum.playlistmaker.media.ui.state.favorites.toUiState
+import com.practicum.playlistmaker.media.ui.view_model.favorites.FavoritesViewModel
+import com.practicum.playlistmaker.player.ui.fragment.PlayerFragment
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.ui.TrackAdapter
 import com.practicum.playlistmaker.utils.BindingFragment
@@ -85,10 +88,12 @@ class FavoritesFragment : BindingFragment<FragmentFavoritesBinding>() {
     private fun tapOnTrack(track: Track) {
         clickDebouncer.tryClick {
             viewModel.addTrackToHistory(track)
-            val intent = Intent(requireContext(), PlayerActivity::class.java).apply {
-                putExtra(TRACK, Gson().toJson(track))
-            }
-            startActivity(intent)
+
+            val bundle = Bundle().apply { putParcelable(TRACK, track) }
+            findNavController().navigate(
+                R.id.playerFragment,
+                bundle
+            )
         }
     }
 
