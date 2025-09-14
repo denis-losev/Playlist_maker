@@ -10,6 +10,8 @@ import com.practicum.playlistmaker.Constants.SHARED_PREFS
 import com.practicum.playlistmaker.Constants.TRACKS_LIST_HISTORY
 import com.practicum.playlistmaker.db.data.AppDatabase
 import com.practicum.playlistmaker.db.data.migrations.MIGRATION_1_2
+import com.practicum.playlistmaker.db.data.migrations.MIGRATION_2_3
+import com.practicum.playlistmaker.db.data.migrations.MIGRATION_3_4
 import com.practicum.playlistmaker.search.data.network.ITunesApiService
 import com.practicum.playlistmaker.search.data.network.NetworkClient
 import com.practicum.playlistmaker.search.data.network.RetrofitNetworkClient
@@ -58,7 +60,7 @@ val dataModule = module {
 
     single {
         Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .build()
     }
 }

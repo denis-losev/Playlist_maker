@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.media.ui
+package com.practicum.playlistmaker.media.ui.adapters
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -11,7 +11,7 @@ class MediaViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecyc
     FragmentStateAdapter(fragmentManager, lifecycle) {
 
     private val fragmentsList: List<Fragment> =
-        listOf(FavoritesFragment.newInstance(), PlaylistsFragment.newInstance())
+        listOf(FavoritesFragment.Companion.newInstance(), PlaylistsFragment.Companion.newInstance())
 
     override fun getItemCount(): Int {
         return fragmentsList.count()

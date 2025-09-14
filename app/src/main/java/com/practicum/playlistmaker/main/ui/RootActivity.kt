@@ -24,11 +24,13 @@ class RootActivity : AppCompatActivity() {
 
         binding.bottomNavigationView.setupWithNavController(navController)
 
+        val destinationsWithoutBottomBar = setOf(
+            R.id.playerFragment,
+            R.id.fragment_create_playlist
+        )
+
         navController.addOnDestinationChangedListener{ _, destination, _ ->
-            when (destination.id) {
-                R.id.playerActivity -> binding.bottomNavigationView.isVisible = false
-                else -> binding.bottomNavigationView.isVisible = true
-            }
+            binding.bottomNavigationView.isVisible = destination.id !in destinationsWithoutBottomBar
         }
     }
 }

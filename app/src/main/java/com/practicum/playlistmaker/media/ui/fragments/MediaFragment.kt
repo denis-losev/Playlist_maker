@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import com.google.android.material.tabs.TabLayoutMediator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentMediaBinding
-import com.practicum.playlistmaker.media.ui.MediaViewPagerAdapter
+import com.practicum.playlistmaker.media.ui.adapters.MediaViewPagerAdapter
 import com.practicum.playlistmaker.utils.BindingFragment
 
 class MediaFragment : BindingFragment<FragmentMediaBinding>() {

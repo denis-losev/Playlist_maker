@@ -11,7 +11,7 @@ class TrackAdapter(private val onTrackClick: (Track) -> Unit) : RecyclerView.Ada
     var tracks = ArrayList<Track>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.track, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_track_view, parent, false)
         return TrackViewHolder(view)
     }
 
