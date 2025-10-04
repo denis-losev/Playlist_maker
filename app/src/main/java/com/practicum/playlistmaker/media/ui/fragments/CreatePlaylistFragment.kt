@@ -16,7 +16,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -31,7 +30,6 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import java.io.File
 import java.io.FileOutputStream
-import java.io.FilterOutputStream
 
 class CreatePlaylistFragment() :
     BindingFragment<FragmentCreatePlaylistBinding>() {

@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.db.domain.playlists
 
 import com.practicum.playlistmaker.media.domain.model.Playlist
+import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.flow.Flow
 
 interface PlaylistRepository {
@@ -12,4 +13,8 @@ interface PlaylistRepository {
     suspend fun setTracksCount(playlistName: String, tracksCount: Int): Int
     suspend fun getPlaylistId(playlistName: String): Int
     suspend fun updatePlaylist(playlist: Playlist)
+    suspend fun getPlaylistById(id: Int): Playlist
+    suspend fun getTracksByIds(ids: List<Int>): List<Track>
+    suspend fun saveTrack(track: Track)
+    suspend fun removeTrackFromPlaylist(trackId: Int, playlist: Playlist)
 }

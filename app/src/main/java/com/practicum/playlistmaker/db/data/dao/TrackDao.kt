@@ -26,4 +26,10 @@ interface TrackDao {
 
     @Query("SELECT * FROM $TRACK_TABLE ORDER BY addedAt DESC")
     fun getTracksFlow(): Flow<List<TrackEntity>>
+
+    @Query("SELECT SUM(trackTimeMillis) FROM $TRACK_TABLE WHERE trackId IN(:ids)")
+    fun getTracksSummDuration(ids: List<Int>): Long
+
+    @Query("SELECT * FROM $TRACK_TABLE WHERE trackId IN(:ids)")
+    suspend fun getTracksByIds(ids: List<Int>): List<TrackEntity>
 }

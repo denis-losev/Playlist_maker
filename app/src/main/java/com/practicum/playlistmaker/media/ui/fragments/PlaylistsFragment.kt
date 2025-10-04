@@ -8,7 +8,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
+import com.practicum.playlistmaker.Constants.PLAYLIST
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.practicum.playlistmaker.media.domain.model.Playlist
@@ -84,7 +84,13 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
     }
 
     private fun tapOnPlaylist(playlist: Playlist) {
-
+        clickDebouncer.tryClick {
+            val bundle = Bundle().apply { putParcelable(PLAYLIST, playlist) }
+            findNavController().navigate(
+                R.id.playlistFragment,
+                bundle
+            )
+        }
     }
 
     private fun createPlaylistButtonClick() {

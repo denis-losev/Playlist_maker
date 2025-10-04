@@ -24,7 +24,10 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
     private val viewModel: SearchViewModel by viewModel()
     private lateinit var clickDebouncer: ClickDebouncer
 
-    private val adapter = TrackAdapter { tapOnTrack(it) }
+    private val adapter = TrackAdapter(
+        onTrackClick = { tapOnTrack(it) },
+        onTrackLongClick = null
+    )
 
     override fun createBinding(
         inflater: LayoutInflater,

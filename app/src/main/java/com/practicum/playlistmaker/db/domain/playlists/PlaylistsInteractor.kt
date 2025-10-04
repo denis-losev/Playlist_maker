@@ -13,4 +13,9 @@ interface PlaylistsInteractor {
     suspend fun setTracksCount(playlistName: String, tracksCount: Int): Int
     suspend fun getPlaylistId(playlistName: String): Int
     suspend fun addTrackToPlaylist(track: Track, playlist: Playlist): Boolean
+    suspend fun getPlaylistTracksSummDuration(playlist: Playlist): Long
+    suspend fun getTracksInPlaylist(playlist: Playlist): List<Track>
+    suspend fun getTracksInPlaylistOptimized(playlist: Playlist): List<Track>
+    suspend fun removeTrackFromPlaylist(trackId: Int, playlist: Playlist): Boolean
+    suspend fun updatePlaylist(playlist: Playlist): Boolean
 }
