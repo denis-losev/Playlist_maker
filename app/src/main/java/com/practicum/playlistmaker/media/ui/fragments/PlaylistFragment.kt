@@ -34,6 +34,7 @@ class PlaylistFragment() : BindingFragment<FragmentPlaylistBinding>() {
     private val viewModel: PlaylistViewModel by viewModel()
     private lateinit var clickDebouncer: ClickDebouncer
     private lateinit var actionsBottomSheetBehavior: BottomSheetBehavior<MaterialCardView>
+    private lateinit var tracksBottomSheetBehavior: BottomSheetBehavior<MaterialCardView> // Добавлено
 
     private var bottomSheetCallback: BottomSheetBehavior.BottomSheetCallback? = null
 
@@ -73,9 +74,13 @@ class PlaylistFragment() : BindingFragment<FragmentPlaylistBinding>() {
         setupTracksBottomSheetHeight()
         setupActionsBottomSheetHeight()
         setupActionsBottomSheet()
+        setupTracksBottomSheet()
         setupClickListeners()
     }
 
+    private fun setupTracksBottomSheet() {
+        tracksBottomSheetBehavior = BottomSheetBehavior.from(binding.playlistBottomSheet)
+    }
 
     private fun setupUI() {
         binding.toolbar.setNavigationOnClickListener { findNavController().popBackStack() }
@@ -382,6 +387,7 @@ class PlaylistFragment() : BindingFragment<FragmentPlaylistBinding>() {
                 when (newState) {
                     BottomSheetBehavior.STATE_HIDDEN -> {
                         binding.overlay.visibility = View.GONE
+                        tracksBottomSheetBehavior.isDraggable = true
                     }
 
                     BottomSheetBehavior.STATE_EXPANDED,
@@ -433,6 +439,9 @@ class PlaylistFragment() : BindingFragment<FragmentPlaylistBinding>() {
 
     private fun showActionsBottomSheet() {
         if (!isAdded || view == null) return
+
+        // Блокируем основной BottomSheet перед показом меню
+        tracksBottomSheetBehavior.isDraggable = false
 
         binding.actionsBottomSheet.visibility = View.VISIBLE
         actionsBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED

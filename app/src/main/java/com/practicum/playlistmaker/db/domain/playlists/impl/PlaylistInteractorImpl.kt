@@ -20,7 +20,7 @@ class PlaylistInteractorImpl(
     }
 
     override suspend fun deletePlaylist(playlist: Playlist) {
-         playlistRepository.deletePlaylist(playlist)
+        playlistRepository.deletePlaylist(playlist)
     }
 
     override fun getPlaylists(): Flow<List<Playlist>> {
@@ -47,7 +47,6 @@ class PlaylistInteractorImpl(
         playlist: Playlist
     ): Boolean {
         return try {
-            playlistRepository.saveTrack(track)
 
             val updatedPlaylist = playlist.copy(
                 tracksCount = playlist.tracksCount + 1,
@@ -58,10 +57,9 @@ class PlaylistInteractorImpl(
                 trackId = track.trackId,
                 playlistId = playlist.id
             )
-            playlistedTracksRepository.insertTrackInPlaylist(playlistedTrack)
+            playlistedTracksRepository.insertTrackInPlaylist(playlistedTrack, track)
             true
         } catch (e: Exception) {
-            println("[ADD_TRACK] ERROR: ${e.message}")
             e.printStackTrace()
             false
         }
@@ -72,14 +70,7 @@ class PlaylistInteractorImpl(
     }
 
     override suspend fun getTracksInPlaylist(playlist: Playlist): List<Track> {
-        val trackIds = playlistedTracksRepository.getPlaylistedTracksIds(playlist.id)
-        val tracks = if (trackIds.isNotEmpty()) {
-            val result = playlistedTracksRepository.getTracksByIds(trackIds)
-            result
-        } else {
-            emptyList()
-        }
-        return tracks
+        return getTracksInPlaylistOptimized(playlist)
     }
 
     override suspend fun getTracksInPlaylistOptimized(playlist: Playlist): List<Track> {
@@ -92,7 +83,13 @@ class PlaylistInteractorImpl(
     ): Boolean {
         return try {
             withContext(Dispatchers.IO) {
-                playlistRepository.removeTrackFromPlaylist(trackId, playlist)
+                playlistedTracksRepository.deleteTrackFromPlaylist(trackId, playlist.id)
+
+                val updatedPlaylist = playlist.copy(
+                    tracksCount = playlist.tracksCount - 1,
+                    tracksIds = playlist.tracksIds.filter { it != trackId }
+                )
+                playlistRepository.updatePlaylist(updatedPlaylist)
             }
             true
         } catch (e: Exception) {
@@ -106,7 +103,6 @@ class PlaylistInteractorImpl(
             playlistRepository.updatePlaylist(playlist)
             true
         } catch (e: Exception) {
-            println("[UPDATE_PLAYLIST] Error: ${e.message}")
             false
         }
     }

@@ -10,16 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="0dp"
-            app:contentInsetStartWithNavigation="0dp"
-            app:navigationIcon="@drawable/arrow_back"
-            app:titleTextColor="?attr/blackRussianToWhite"
-            tools:ignore="MissingConstraints,RtlSymmetry" />
-
         <ImageView
             android:id="@+id/playlist_cover_image"
             android:layout_width="0dp"
@@ -130,6 +120,16 @@
             android:background="#40000000"
             android:visibility="gone" />
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="0dp"
+            app:contentInsetStartWithNavigation="0dp"
+            app:navigationIcon="@drawable/arrow_back"
+            app:titleTextColor="?attr/blackRussianToWhite"
+            tools:ignore="MissingConstraints,RtlSymmetry" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.card.MaterialCardView
@@ -172,6 +172,7 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/actionsBottomSheet"
         android:layout_width="match_parent"
+        app:behavior_draggable="false"
         android:layout_height="wrap_content"
         app:behavior_hideable="true"
         android:visibility="gone"

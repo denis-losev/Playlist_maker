@@ -49,3 +49,43 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
     }
 }
 
+val MIGRATION_4_5 = object : Migration(4, 5) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL(
+            """
+            CREATE TABLE playlisted_tracks_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                trackId INTEGER NOT NULL,
+                playlistId INTEGER NOT NULL,
+                trackName TEXT NOT NULL,
+                artistName TEXT NOT NULL,
+                trackTimeMillis INTEGER NOT NULL,
+                artworkUrl100 TEXT NOT NULL,
+                collectionName TEXT NOT NULL,
+                releaseDate TEXT NOT NULL,
+                primaryGenreName TEXT NOT NULL,
+                country TEXT NOT NULL,
+                previewUrl TEXT,
+                addedAt INTEGER NOT NULL
+            )
+        """.trimIndent()
+        )
+
+        database.execSQL(
+            """
+            INSERT INTO playlisted_tracks_new (id, trackId, playlistId, trackName, artistName, trackTimeMillis, artworkUrl100, collectionName, releaseDate, primaryGenreName, country, previewUrl, addedAt)
+            SELECT 
+                id, 
+                trackId, 
+                playlistId, 
+                '', '', 0, '', '', '', '', '', NULL, 0
+            FROM $PLAYLISTED_TRACKS_TABLE
+        """.trimIndent()
+        )
+
+        database.execSQL("DROP TABLE $PLAYLISTED_TRACKS_TABLE")
+
+        database.execSQL("ALTER TABLE playlisted_tracks_new RENAME TO $PLAYLISTED_TRACKS_TABLE")
+
+    }
+}
