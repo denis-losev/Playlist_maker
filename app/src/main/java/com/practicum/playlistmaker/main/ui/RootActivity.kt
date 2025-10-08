@@ -26,7 +26,9 @@ class RootActivity : AppCompatActivity() {
 
         val destinationsWithoutBottomBar = setOf(
             R.id.playerFragment,
-            R.id.fragment_create_playlist
+            R.id.fragment_create_playlist,
+            R.id.playlistFragment,
+            R.id.editPlaylistFragment
         )
 
         navController.addOnDestinationChangedListener{ _, destination, _ ->

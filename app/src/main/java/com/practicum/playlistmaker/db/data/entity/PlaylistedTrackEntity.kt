@@ -9,5 +9,15 @@ data class PlaylistedTrackEntity(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
     var trackId: Int,
-    var playlistId: Int
+    var playlistId: Int,
+    val trackName: String,
+    val artistName: String,
+    val trackTimeMillis: Int,
+    val artworkUrl100: String,
+    val collectionName: String,
+    val releaseDate: String,
+    val primaryGenreName: String,
+    val country: String,
+    val previewUrl: String?,
+    val addedAt: Long = System.currentTimeMillis()
 )

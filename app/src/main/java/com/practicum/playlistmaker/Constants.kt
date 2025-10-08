@@ -9,6 +9,7 @@ object Constants {
 
     const val TRACK = "TRACK"
     const val ZERO_TIMER = "00:00"
+    const val PLAYLIST = "PLAYLIST"
 
     const val TRACK_TABLE = "track_table"
     const val PLAYLIST_TABLE = "playlist_table"
