@@ -113,29 +113,29 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             when (state) {
                 is PlayerState.Default -> {
                     binding.playBtn.isEnabled = false
-                    binding.playBtn.setImageResource(R.drawable.play_btn)
+                    binding.playBtn.setPlaying(false)
                     binding.currentPlayPosition.text = ZERO_TIMER
                 }
 
                 is PlayerState.Prepared -> {
                     binding.playBtn.isEnabled = true
-                    binding.playBtn.setImageResource(R.drawable.play_btn)
+                    binding.playBtn.setPlaying(false)
                     binding.currentPlayPosition.text = ZERO_TIMER
                     updateFavoriteButton(state.track.isFavorite)
                 }
 
                 is PlayerState.Playing -> {
-                    binding.playBtn.setImageResource(R.drawable.pause_btn)
+                    binding.playBtn.setPlaying(true)
                     binding.currentPlayPosition.text = formatTime(state.currentPosition)
                 }
 
                 is PlayerState.Paused -> {
-                    binding.playBtn.setImageResource(R.drawable.play_btn)
+                    binding.playBtn.setPlaying(false)
                     binding.currentPlayPosition.text = formatTime(state.currentPosition)
                 }
 
                 is PlayerState.Completed -> {
-                    binding.playBtn.setImageResource(R.drawable.play_btn)
+                    binding.playBtn.setPlaying(false)
                     binding.currentPlayPosition.text = ZERO_TIMER
                 }
             }
@@ -150,7 +150,6 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
                     showPlaylists(state.playlists)
                 }
                 is PlaylistsState.Empty -> {
-                    // Показать пустое состояние
                     playlistsAdapter.playlists.clear()
                     playlistsAdapter.notifyDataSetChanged()
                 }
