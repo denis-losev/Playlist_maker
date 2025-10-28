@@ -99,12 +99,13 @@
             app:layout_constraintStart_toEndOf="@id/leftBorder"
             app:layout_constraintTop_toTopOf="@+id/play_btn" />
 
-        <ImageView
+        <com.practicum.playlistmaker.utils.customPlayButton.PlaybackButtonView
             android:id="@+id/play_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
             android:layout_marginTop="40dp"
-            android:src="@drawable/play_btn"
+            app:playIcon="@drawable/play_btn"
+            app:pauseIcon="@drawable/pause_btn"
             app:layout_constraintEnd_toStartOf="@id/favourites_btn"
             app:layout_constraintStart_toEndOf="@id/add_to_playlist_btn"
             app:layout_constraintTop_toBottomOf="@id/artistName" />
@@ -207,11 +208,12 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <View android:id="@+id/overlay"
+    <View
+        android:id="@+id/overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#99000000"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/bottomSheet"
@@ -271,10 +273,10 @@
                 android:id="@+id/playlistsRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="13dp"
                 android:layout_marginTop="8dp"
+                android:paddingHorizontal="13dp"
                 android:visibility="visible"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
