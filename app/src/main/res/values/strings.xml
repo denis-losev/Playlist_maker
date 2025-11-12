@@ -37,6 +37,9 @@
     <string name="is_create_playlist_finished">Завершить создание плейлиста?</string>
     <string name="all_not_saved_changes_will_lost">Все несохраненные данные будут потеряны</string>
     <string name="addToPlaylist">Добавить в плейлист</string>
+    <string name="musicPlaybackNotifications">Music playback notifications</string>
+    <string name="musicPlayerChannel">music_player_channel</string>
+    <string name="musicPlayer">Music Player</string>
     <plurals name="tracks_count">
         <item quantity="one">%d трек</item>
         <item quantity="few">%d трека</item>
