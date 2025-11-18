@@ -11,7 +11,8 @@ import com.practicum.playlistmaker.media.ui.state.playlists.PlaylistedTrackState
 import com.practicum.playlistmaker.media.ui.state.playlists.PlaylistsState
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.PlayerState
-import com.practicum.playlistmaker.player.domain.PlayerInteractor
+import com.practicum.playlistmaker.player.service.MusicService
+import com.practicum.playlistmaker.player.service.PlaybackState
 import com.practicum.playlistmaker.utils.UiMessage
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -19,17 +20,15 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class PlayerViewModel(
-    private val playerInteractor: PlayerInteractor,
     private val favoriteInteractor: FavoriteInteractor,
     private val playlistsInteractor: PlaylistsInteractor
 ) : ViewModel() {
 
-    init {
-        playerInteractor.onPrepared.observeForever { onPrepared() }
-        playerInteractor.onCompletion.observeForever { onCompletion() }
-    }
+    private var playingTrack: Track? = null
+    private var musicService: MusicService? = null
+    private var isBound = false
 
-    private lateinit var playingTrack: Track
+    private var progressJob: Job? = null
 
     private val _state = MutableLiveData<PlayerState>()
     fun getState(): LiveData<PlayerState> = _state
@@ -40,58 +39,69 @@ class PlayerViewModel(
     private val _playlistedTrackState = MutableLiveData<PlaylistedTrackState>()
     fun getPlaylistedTrackState(): LiveData<PlaylistedTrackState> = _playlistedTrackState
 
-    private var isPlaying = false
-    private var progressJob: Job? = null
+    fun setMusicService(service: MusicService?) {
+        musicService = service
+        isBound = service != null
+
+        if (service != null) {
+            observeServiceState()
+        }
+    }
+
+    private fun observeServiceState() {
+        musicService?.playbackState?.observeForever { state ->
+            val currentTrack = playingTrack ?: return@observeForever
+
+            when (state) {
+                PlaybackState.PREPARED -> {
+                    _state.postValue(PlayerState.Prepared(currentTrack))
+                }
+                PlaybackState.PLAYING -> {
+                    startProgressUpdater()
+                    _state.postValue(PlayerState.Playing(currentTrack, musicService?.getCurrentPosition() ?: 0))
+                }
+                PlaybackState.PAUSED -> {
+                    stopProgressUpdater()
+                    _state.postValue(PlayerState.Paused(currentTrack, musicService?.getCurrentPosition() ?: 0))
+                }
+                PlaybackState.COMPLETED -> {
+                    stopProgressUpdater()
+                    _state.postValue(PlayerState.Completed(currentTrack))
+                    musicService?.hideNotification()
+                }
+                PlaybackState.IDLE -> {
+                    _state.postValue(PlayerState.Default(currentTrack))
+                }
+                else -> {}
+            }
+        }
+    }
 
     fun preparePlayer(track: Track) {
         playingTrack = track
         viewModelScope.launch {
             val isFavorite = favoriteInteractor.isFavorite(track.trackId)
-            playingTrack.isFavorite = isFavorite
-            playerInteractor.prepare(playingTrack)
+            playingTrack?.isFavorite = isFavorite
+            _state.postValue(PlayerState.Prepared(track))
         }
     }
 
-    private fun onPrepared() {
-        _state.postValue(PlayerState.Prepared(playingTrack))
-    }
-
-    private fun startPlaying() {
-        isPlaying = true
-        playerInteractor.play()
-        _state.postValue(PlayerState.Playing(playingTrack, playerInteractor.getCurrentPosition()))
-        startProgressUpdater()
-    }
-
-    private fun pausePlaying() {
-        isPlaying = false
-        playerInteractor.pause()
-        _state.postValue(PlayerState.Paused(playingTrack, playerInteractor.getCurrentPosition()))
-        stopProgressUpdater()
-    }
-
     fun togglePlayback() {
-        if (isPlaying) pausePlaying()
-        else startPlaying()
-    }
-
-    private fun onCompletion() {
-        isPlaying = false
-        _state.postValue(PlayerState.Completed(playingTrack))
-        stopProgressUpdater()
+        when (musicService?.playbackState?.value) {
+            PlaybackState.PLAYING -> musicService?.pause()
+            PlaybackState.PAUSED, PlaybackState.PREPARED -> musicService?.play()
+            else -> {}
+        }
     }
 
     private fun startProgressUpdater() {
         stopProgressUpdater()
         progressJob = viewModelScope.launch {
-            while (isPlaying) {
+            while (musicService?.playbackState?.value == PlaybackState.PLAYING) {
                 delay(DEBOUNCE_DELAY)
-                _state.postValue(
-                    PlayerState.Playing(
-                        playingTrack,
-                        playerInteractor.getCurrentPosition()
-                    )
-                )
+                val position = musicService?.getCurrentPosition() ?: 0
+                val currentTrack = playingTrack ?: break
+                _state.postValue(PlayerState.Playing(currentTrack, position))
             }
         }
     }
@@ -101,17 +111,37 @@ class PlayerViewModel(
         progressJob = null
     }
 
-    fun toggleFavoriteFlag() {
-        val newFav = !playingTrack.isFavorite
-        playingTrack.isFavorite = newFav
+    fun onAppMinimized() {
+        if (isBound && musicService?.playbackState?.value == PlaybackState.PLAYING) {
+            musicService?.showNotification()
+        }
+    }
 
-        _state.postValue(PlayerState.Prepared(playingTrack))
+    fun onAppResumed() {
+        if (isBound) {
+            musicService?.hideNotification()
+        }
+    }
+
+    fun onScreenClosed() {
+        if (isBound) {
+            musicService?.pause()
+            musicService?.hideNotification()
+        }
+    }
+
+    fun toggleFavoriteFlag() {
+        val currentTrack = playingTrack ?: return
+        val newFav = !currentTrack.isFavorite
+        currentTrack.isFavorite = newFav
+
+        _state.postValue(PlayerState.Prepared(currentTrack))
 
         viewModelScope.launch {
             if (newFav) {
-                favoriteInteractor.addTrack(playingTrack)
+                favoriteInteractor.addTrack(currentTrack)
             } else {
-                favoriteInteractor.deleteTrack(playingTrack)
+                favoriteInteractor.deleteTrack(currentTrack)
             }
         }
     }
@@ -124,7 +154,6 @@ class PlayerViewModel(
                     .getPlaylists()
                     .collect { playlists ->
                         processPlaylistsResult(playlists)
-
                     }
 
             } catch (e: Exception) {
@@ -148,14 +177,16 @@ class PlayerViewModel(
     }
 
     fun tapOnPlaylist(playlist: Playlist) {
+        val currentTrack = playingTrack ?: return
+
         viewModelScope.launch {
-            if (playlist.tracksIds.contains(playingTrack.trackId)) {
+            if (playlist.tracksIds.contains(currentTrack.trackId)) {
                 _playlistedTrackState.postValue(PlaylistedTrackState.AlreadyExists(playlist.name))
                 return@launch
             }
 
             try {
-                val success = playlistsInteractor.addTrackToPlaylist(playingTrack, playlist)
+                val success = playlistsInteractor.addTrackToPlaylist(currentTrack, playlist)
                 if (success) {
                     _playlistedTrackState.postValue(PlaylistedTrackState.Success(playlist.name))
                     getPlaylists()
@@ -170,9 +201,6 @@ class PlayerViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        playerInteractor.release()
-        playerInteractor.onPrepared.removeObserver { onPrepared() }
-        playerInteractor.onCompletion.removeObserver { onCompletion() }
         stopProgressUpdater()
     }
 

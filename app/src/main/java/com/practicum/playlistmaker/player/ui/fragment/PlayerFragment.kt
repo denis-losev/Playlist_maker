@@ -1,10 +1,18 @@
 package com.practicum.playlistmaker.player.ui.fragment
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
@@ -18,16 +26,15 @@ import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.Constants.TRACK
 import com.practicum.playlistmaker.Constants.ZERO_TIMER
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
-import com.practicum.playlistmaker.db.domain.playlists.PlaylistsInteractor
 import com.practicum.playlistmaker.media.domain.model.Playlist
 import com.practicum.playlistmaker.media.ui.state.playlists.PlaylistedTrackState
 import com.practicum.playlistmaker.media.ui.state.playlists.PlaylistsState
 import com.practicum.playlistmaker.player.PlayerState
+import com.practicum.playlistmaker.player.service.MusicService
 import com.practicum.playlistmaker.player.ui.adapters.PlaylistsInPlayerAdapter
 import com.practicum.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.practicum.playlistmaker.utils.BindingFragment
 import com.practicum.playlistmaker.utils.debouncer.ClickDebouncer
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
@@ -38,7 +45,26 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     private lateinit var playlistsAdapter: PlaylistsInPlayerAdapter
 
     private lateinit var track: Track
-    private val playlistsInteractor: PlaylistsInteractor by inject()
+
+    private var musicService: MusicService? = null
+    private var isBound = false
+
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName?, service: IBinder?) {
+            val binder = service as MusicService.MusicBinder
+            musicService = binder.getService()
+            isBound = true
+            viewModel.setMusicService(musicService)
+            viewModel.preparePlayer(track)
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName?) {
+            musicService = null
+            isBound = false
+            viewModel.setMusicService(null)
+        }
+    }
+
     override fun createBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
@@ -53,6 +79,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         track = arguments?.getParcelable(TRACK)
             ?: throw IllegalArgumentException("track is required")
 
+        checkNotificationPermission()
 
         playlistsAdapter = PlaylistsInPlayerAdapter { playlist ->
             tapOnPlaylist(playlist)
@@ -60,10 +87,46 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
         viewModel.preparePlayer(track)
 
+        bindMusicService()
+
         createPlaylistButtonClick()
         setupUI()
         setupObservers()
         createBottomSheet()
+    }
+
+    private fun bindMusicService() {
+        val intent = Intent(requireContext(), MusicService::class.java).apply {
+            putExtra(MusicService.EXTRA_TRACK, track)
+        }
+        requireContext().bindService(intent, connection, Context.BIND_AUTO_CREATE)
+    }
+
+    private fun unbindMusicService() {
+        if (isBound) {
+            requireContext().unbindService(connection)
+            isBound = false
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onAppResumed()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (!requireActivity().isFinishing) {
+            if (!requireActivity().isChangingConfigurations) {
+                viewModel.onAppMinimized()
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.onScreenClosed()
+        unbindMusicService()
     }
 
     private fun setupUI() {
@@ -146,9 +209,11 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
                 is PlaylistsState.Loading -> {
                     // Показать индикатор загрузки
                 }
+
                 is PlaylistsState.Content -> {
                     showPlaylists(state.playlists)
                 }
+
                 is PlaylistsState.Empty -> {
                     playlistsAdapter.playlists.clear()
                     playlistsAdapter.notifyDataSetChanged()
@@ -157,7 +222,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         }
 
         viewModel.getPlaylistedTrackState().observe(viewLifecycleOwner) { state ->
-            when(state) {
+            when (state) {
                 is PlaylistedTrackState.AlreadyExists -> showMessage("Трек уже есть в ${state.playlistName}")
                 is PlaylistedTrackState.Error -> showMessage("Ошибка ${state.message}")
                 is PlaylistedTrackState.Success -> {
@@ -195,6 +260,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
                         overlay.visibility = View.VISIBLE
                         viewModel.getPlaylists()
                     }
+
                     else -> {
                         overlay.visibility = View.VISIBLE
                         viewModel.getPlaylists()
@@ -244,6 +310,44 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         }
     }
 
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissions(
+                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                    NOTIFICATION_PERMISSION_REQUEST_CODE
+                )
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(
+                    requireContext(),
+                    "Разрешение на уведомления получено",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Уведомления не будут показываться",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
     companion object {
         fun newInstance(track: Track): PlayerFragment {
             val args = bundleOf(TRACK to track)
@@ -251,5 +355,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             fragment.arguments = args
             return fragment
         }
+
+        private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 1001
     }
 }
