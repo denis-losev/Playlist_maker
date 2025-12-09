@@ -30,15 +30,21 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        compose = true
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.9"
+    }
     kotlinOptions {
         jvmTarget = "1.8"
+
     }
+
     ksp {
         arg("room.schemaLocation", "$projectDir/schemas")
     }
@@ -70,9 +76,19 @@ dependencies {
     implementation(libs.rxjava)
     implementation(libs.rxandroid)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.material)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.coil.compose)
+    implementation(libs.coil)
+    implementation(libs.androidx.runtime)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    debugImplementation(libs.androidx.ui.tooling)
 
     val room_version = "2.5.1"
     implementation("androidx.room:room-runtime:$room_version")
