@@ -96,7 +96,8 @@ fun TrackItem(
             Text(
                 text = track.getTrackDuration(),
                 fontSize = 12.sp,
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+                maxLines = 1
             )
         }
     }

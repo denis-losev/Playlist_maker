@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.search.ui.composable
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -38,7 +39,12 @@ import kotlinx.coroutines.delay
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 
+@SuppressLint("ResourceAsColor")
 @Composable
 fun SearchContent(
     state: SearchState,
@@ -54,6 +60,37 @@ fun SearchContent(
 
     var debouncedQuery by remember { mutableStateOf("") }
 
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    val isDarkTheme = MaterialTheme.colors.isLight.not()
+
+    val textFieldBackgroundColor = if (isDarkTheme) {
+        Color(0xFFFFFFFF)
+    } else {
+        Color(0xFFE6E8EB)
+    }
+
+    val searchIconColor = if (isDarkTheme) {
+        Color(0xFF1A1B22)
+    } else {
+        Color(0xFFAEAFB4)
+    }
+
+    val clearIconColor = if (isDarkTheme) {
+        Color(0xFF1A1B22)
+    } else {
+        Color(0xFFAEAFB4)
+    }
+
+    val textColor = Color(0xFF1A1B22)
+
+    val placeholderColor = if (isDarkTheme) {
+        Color(0xFF1A1B22).copy(alpha = 0.7f)
+    } else {
+        Color(0xFFAEAFB4)
+    }
+
     LaunchedEffect(searchQuery) {
         delay(2000L)
         debouncedQuery = searchQuery
@@ -64,6 +101,13 @@ fun SearchContent(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.background)
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }) {
+
+                focusManager.clearFocus()
+                keyboardController?.hide()
+            }
     ) {
         TopAppBar(
             title = {
@@ -76,7 +120,6 @@ fun SearchContent(
             backgroundColor = MaterialTheme.colors.surface,
             elevation = 0.dp
         )
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -86,6 +129,10 @@ fun SearchContent(
                 value = searchQuery,
                 onValueChange = { query ->
                     searchQuery = query
+                    if (query.isEmpty()) {
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -93,14 +140,14 @@ fun SearchContent(
                 placeholder = {
                     Text(
                         text = stringResource(R.string.search),
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+                        color = placeholderColor
                     )
                 },
                 leadingIcon = {
                     Icon(
                         Icons.Default.Search,
                         contentDescription = null,
-                        tint = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
+                        tint = searchIconColor
                     )
                 },
                 trailingIcon = {
@@ -108,11 +155,13 @@ fun SearchContent(
                         IconButton(onClick = {
                             searchQuery = ""
                             onClearSearch()
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
                         }) {
                             Icon(
                                 Icons.Default.Clear,
                                 contentDescription = "Clear",
-                                tint = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
+                                tint = clearIconColor
                             )
                         }
                     }
@@ -124,27 +173,34 @@ fun SearchContent(
                 keyboardActions = KeyboardActions(
                     onDone = {
                         onSearchClicked()
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
                     }
                 ),
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    textColor = MaterialTheme.colors.onSurface,
-                    backgroundColor = MaterialTheme.colors.surface,
+                    textColor = textColor,
+                    backgroundColor = textFieldBackgroundColor,
                     cursorColor = MaterialTheme.colors.primary,
                     focusedBorderColor = MaterialTheme.colors.primary.copy(alpha = 0.5f),
-                    unfocusedBorderColor = Color.Transparent
+                    unfocusedBorderColor = Color.Transparent,
+                    placeholderColor = placeholderColor,
+                    focusedLabelColor = textColor,
+                    unfocusedLabelColor = placeholderColor
                 ),
                 shape = RoundedCornerShape(8.dp)
             )
         }
 
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
         ) {
             when (state) {
                 is SearchState.Loading -> {
                     LoadingView()
                 }
+
                 is SearchState.SearchResult -> {
                     TrackList(
                         tracks = state.tracks,
@@ -152,6 +208,7 @@ fun SearchContent(
                         showHistoryTitle = false
                     )
                 }
+
                 is SearchState.History -> {
                     Column {
                         Text(
@@ -160,36 +217,61 @@ fun SearchContent(
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 16.dp),
                             color = MaterialTheme.colors.onSurface,
-                            fontSize = 19.sp
+                            fontSize = 20.sp
                         )
-
-                        TrackList(
-                            tracks = state.tracks,
-                            onTrackClick = onTrackClick,
-                            showHistoryTitle = false
-                        )
-
-                        Button(
-                            onClick = onClearHistory,
+                        LazyColumn(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 24.dp, vertical = 16.dp),
-                            shape = RoundedCornerShape(54.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = MaterialTheme.colors.primary,
-                                contentColor = MaterialTheme.colors.onPrimary
+                                .weight(1f),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            contentPadding = PaddingValues(
+                                top = 8.dp,
+                                bottom = 72.dp
                             )
                         ) {
-                            Text(
-                                text = stringResource(R.string.clear_history),
-                                fontSize = 16.sp
-                            )
+                            items(state.tracks) { track ->
+                                TrackItem(
+                                    track = track,
+                                    onTrackClick = { onTrackClick(track) }
+                                )
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 76.dp),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Button(
+                                onClick = {
+                                    onClearHistory()
+                                    focusManager.clearFocus()
+                                    keyboardController?.hide()
+                                },
+
+                                modifier = Modifier
+                                    .height(54.dp),
+                                shape = RoundedCornerShape(54.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = MaterialTheme.colors.primary,
+                                    contentColor = MaterialTheme.colors.onPrimary
+                                )
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.clear_history),
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
                     }
                 }
+
                 is SearchState.EmptyResult -> {
                     EmptyResultView(message = state.message)
                 }
+
                 is SearchState.Error -> {
                     ErrorView(
                         message = state.errorMessage,
@@ -197,9 +279,8 @@ fun SearchContent(
                         onRefresh = onRefresh
                     )
                 }
-                SearchState.Init -> {
-                    // Пустой экран при старте
-                }
+
+                SearchState.Init -> Unit
             }
         }
     }
@@ -289,15 +370,17 @@ fun TrackItem(
                         contentDescription = "Ellipse",
                         modifier = Modifier
                             .size(3.dp),
-                        tint = Color(R.color.aluminium_snow_color)
-                    )
+                        tint = Color(R.color.aluminium_snow_color),
+
+                        )
 
                     Spacer(modifier = Modifier.width(3.dp))
 
                     Text(
                         text = track.getTrackDuration(),
                         color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-                        fontSize = 14.sp
+                        fontSize = 14.sp,
+                        maxLines = 1
                     )
                 }
 
@@ -337,6 +420,13 @@ fun EmptyResultView(message: UiMessage) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
+        Image(
+            painter = painterResource(id = R.drawable.error404emoji),
+            contentDescription = "Error",
+            modifier = Modifier.size(120.dp)
+        )
+
         Text(
             text = stringResource(R.string.not_found_error_text),
             color = MaterialTheme.colors.onSurface,
@@ -359,35 +449,35 @@ fun ErrorView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Icon(
+        Image(
             painter = painterResource(id = R.drawable.interneterroremoji),
             contentDescription = "Error",
-            tint = MaterialTheme.colors.onSurface,
-            modifier = Modifier.size(64.dp)
+            modifier = Modifier.size(120.dp)
         )
 
         Text(
             text = stringResource(R.string.internet_error_text),
             color = MaterialTheme.colors.onSurface,
             fontSize = 19.sp,
-            modifier = Modifier.padding(vertical = 22.dp)
+            modifier = Modifier.padding(vertical = 22.dp),
+            textAlign = TextAlign.Center
         )
 
-        if (showRefresh) {
-            Button(
-                onClick = onRefresh,
-                shape = RoundedCornerShape(54.dp),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = MaterialTheme.colors.primary,
-                    contentColor = MaterialTheme.colors.onPrimary
-                ),
-                modifier = Modifier.padding(top = 16.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.refresh),
-                    fontSize = 16.sp
-                )
-            }
+        Button(
+            onClick = onRefresh,
+            shape = RoundedCornerShape(54.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = MaterialTheme.colors.primary,
+                contentColor = MaterialTheme.colors.onPrimary
+            ),
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.refresh),
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center
+            )
         }
+
     }
 }

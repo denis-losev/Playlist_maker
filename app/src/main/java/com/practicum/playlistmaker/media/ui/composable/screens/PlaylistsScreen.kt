@@ -38,12 +38,13 @@ import com.practicum.playlistmaker.media.ui.composable.components.PlaylistItem
 import com.practicum.playlistmaker.media.ui.state.playlists.PlaylistsUiState
 import com.practicum.playlistmaker.media.ui.state.playlists.toUiState
 import com.practicum.playlistmaker.media.ui.view_model.playlists.PlaylistsViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun PlaylistsScreen(
     onCreatePlaylistClick: () -> Unit,
     onPlaylistClick: (com.practicum.playlistmaker.media.domain.model.Playlist) -> Unit,
-    viewModel: PlaylistsViewModel
+    viewModel: PlaylistsViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
     val state by viewModel.getState().observeAsState()

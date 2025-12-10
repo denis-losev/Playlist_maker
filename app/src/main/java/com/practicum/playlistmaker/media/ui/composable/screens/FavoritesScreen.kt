@@ -34,11 +34,12 @@ import com.practicum.playlistmaker.media.ui.state.favorites.FavoritesUiState
 import com.practicum.playlistmaker.media.ui.state.favorites.toUiState
 import com.practicum.playlistmaker.media.ui.view_model.favorites.FavoritesViewModel
 import com.practicum.playlistmaker.search.domain.model.Track
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun FavoritesScreen(
     onTrackClick: (Track) -> Unit,
-    viewModel: FavoritesViewModel
+    viewModel: FavoritesViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
 

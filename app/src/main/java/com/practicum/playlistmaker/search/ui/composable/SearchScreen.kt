@@ -4,13 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
+import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.ui.SearchState
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel,
-    onTrackClick: (com.practicum.playlistmaker.search.domain.model.Track) -> Unit
+    onTrackClick: (Track) -> Unit
 ) {
     val state by viewModel.getState().observeAsState(initial = SearchState.Init)
     val context = LocalContext.current
