@@ -1,150 +1,43 @@
 package com.practicum.playlistmaker.search.ui
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
+import androidx.compose.ui.platform.ComposeView
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.practicum.playlistmaker.Constants.TRACK
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.FragmentSearchBinding
-import com.practicum.playlistmaker.utils.debouncer.ClickDebouncer
-import com.practicum.playlistmaker.search.domain.model.Track
+import com.practicum.playlistmaker.search.ui.composable.SearchScreen
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
-import com.practicum.playlistmaker.utils.BindingFragment
+import com.practicum.playlistmaker.utils.PlaylistMakerTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchFragment : BindingFragment<FragmentSearchBinding>() {
+class SearchFragment : Fragment() {
 
     private val viewModel: SearchViewModel by viewModel()
-    private lateinit var clickDebouncer: ClickDebouncer
 
-    private val adapter = TrackAdapter(
-        onTrackClick = { tapOnTrack(it) },
-        onTrackLongClick = null
-    )
-
-    override fun createBinding(
+    override fun onCreateView(
         inflater: LayoutInflater,
-        container: ViewGroup?
-    ): FragmentSearchBinding {
-        return FragmentSearchBinding.inflate(inflater, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        clickDebouncer = ClickDebouncer(coroutineScope = viewLifecycleOwner.lifecycleScope)
-        setupUI()
-        setupObservers()
-    }
-
-    private fun setupUI() {
-        binding.tracksList.adapter = adapter
-
-        binding.clearText.setOnClickListener {
-            binding.searchBar.text.clear()
-            viewModel.showHistoryIfAvailable()
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setContent {
+                PlaylistMakerTheme {
+                    SearchScreen(viewModel = viewModel) { track ->
+                        // Навигация к плееру
+                        val bundle = Bundle().apply {
+                            putParcelable(TRACK, track)
+                        }
+                        findNavController().navigate(
+                            R.id.playerFragment,
+                            bundle
+                        )
+                    }
+                }
+            }
         }
-
-        binding.clearHistoryButton.setOnClickListener { viewModel.clearHistory() }
-
-        binding.searchBar.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) viewModel.showHistoryIfAvailable()
-        }
-
-        binding.searchBar.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                viewModel.onSearchClicked()
-                true
-            } else false
-        }
-
-        binding.searchBar.addTextChangedListener(searchInputWatcher)
-
-        binding.refresh.setOnClickListener { viewModel.onSearchClicked() }
-    }
-
-    private fun setupObservers() {
-        viewModel.getState().observe(viewLifecycleOwner) { state ->
-            render(state.toUiState(requireContext()))
-        }
-    }
-
-    private val searchInputWatcher = object : TextWatcher {
-        override fun beforeTextChanged(input: CharSequence?, start: Int, before: Int, count: Int) {}
-
-        override fun onTextChanged(input: CharSequence?, start: Int, before: Int, count: Int) {
-
-            binding.clearText.isVisible = !input.isNullOrEmpty()
-            viewModel.onSearchQueryChanged(input.toString())
-        }
-
-        override fun afterTextChanged(input: Editable?) {}
-    }
-
-    private fun render(uiState: SearchUiState) = with(binding) {
-        hideAll()
-
-        when (uiState) {
-            SearchUiState.Init -> Unit
-            SearchUiState.Loading -> progressBar.isVisible = true
-            is SearchUiState.ShowError -> showError(uiState)
-            is SearchUiState.ShowHistory -> showHistory(uiState.tracks)
-            is SearchUiState.ShowTracks -> showSearchResult(uiState.tracks)
-        }
-    }
-
-    private fun hideAll() {
-        with(binding) {
-            progressBar.isVisible = false
-            errorContainer.isVisible = false
-            refresh.isVisible = false
-            tracksList.isVisible = false
-            searchHistoryTitle.isVisible = false
-            clearHistoryButton.isVisible = false
-        }
-    }
-
-    private fun showError(uiState: SearchUiState.ShowError) = with(binding) {
-        errorContainer.isVisible = true
-        refresh.isVisible = uiState.showRefresh
-        errorEmoji.setImageResource(uiState.emojiRes)
-        errorMessage.text = uiState.message
-    }
-
-    private fun showHistory(tracks: List<Track>) = with(binding) {
-        adapter.tracks = ArrayList(tracks)
-        adapter.notifyDataSetChanged()
-        tracksList.isVisible = true
-        searchHistoryTitle.isVisible = true
-        clearHistoryButton.isVisible = true
-    }
-
-    private fun showSearchResult(tracks: List<Track>) = with(binding) {
-        adapter.tracks = ArrayList(tracks)
-        adapter.notifyDataSetChanged()
-        tracksList.isVisible = true
-    }
-
-    private fun tapOnTrack(track: Track) {
-        clickDebouncer.tryClick {
-            viewModel.addTrackToHistory(track)
-
-            val bundle = Bundle().apply { putParcelable(TRACK, track) }
-            findNavController().navigate(
-                R.id.playerFragment,
-                bundle
-            )
-        }
-    }
-
-    override fun onDestroyView() {
-        binding.searchBar.removeTextChangedListener(searchInputWatcher)
-        super.onDestroyView()
     }
 }

@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.media.ui.state.favorites
 
 import android.content.Context
+import androidx.compose.runtime.Composable
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.search.domain.model.Track
 

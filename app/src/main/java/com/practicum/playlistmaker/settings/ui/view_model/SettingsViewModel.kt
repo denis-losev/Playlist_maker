@@ -1,5 +1,7 @@
 package com.practicum.playlistmaker.settings.ui.view_model
 
+import android.app.Activity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,11 +19,14 @@ class SettingsViewModel(
     fun getState(): LiveData<ThemeSettings> = _state
 
     init {
-        _state.value = ThemeSettings(settingsInteractor.getThemeSettings().isDarkMode)
+        val currentSettings = settingsInteractor.getThemeSettings()
+        _state.value = currentSettings
+        applyTheme(currentSettings.isDarkMode)
     }
 
     fun switchTheme(isDarkThemeEnabled: Boolean) {
         settingsInteractor.updateThemeSettings(ThemeSettings(isDarkThemeEnabled))
+        applyTheme(isDarkThemeEnabled)
         _state.value = ThemeSettings(isDarkThemeEnabled)
     }
 
@@ -35,5 +40,14 @@ class SettingsViewModel(
 
     fun contactSupport(data: EmailData) {
         sharingInteractor.openSupport(data)
+    }
+
+    private fun applyTheme(isDarkMode: Boolean) {
+        val mode = if (isDarkMode) {
+            AppCompatDelegate.MODE_NIGHT_YES
+        } else {
+            AppCompatDelegate.MODE_NIGHT_NO
+        }
+        AppCompatDelegate.setDefaultNightMode(mode)
     }
 }

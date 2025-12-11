@@ -4,59 +4,63 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import androidx.fragment.app.Fragment
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.FragmentSettingsBinding
+import com.practicum.playlistmaker.utils.PlaylistMakerTheme
+import com.practicum.playlistmaker.settings.ui.composable.SettingsContent
 import com.practicum.playlistmaker.settings.ui.view_model.SettingsViewModel
 import com.practicum.playlistmaker.sharing.domain.model.EmailData
-import com.practicum.playlistmaker.utils.BindingFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class SettingsFragment : BindingFragment<FragmentSettingsBinding>() {
+class SettingsFragment : Fragment() {
 
-    private val viewModel: SettingsViewModel by viewModel{
+    private val viewModel: SettingsViewModel by viewModel {
         parametersOf(requireActivity())
     }
 
-    override fun createBinding(
+    override fun onCreateView(
         inflater: LayoutInflater,
-        container: ViewGroup?
-    ): FragmentSettingsBinding {
-        return FragmentSettingsBinding.inflate(inflater, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        viewModel.getState().observe(viewLifecycleOwner) { state ->
-            binding.themeSwitcher.isChecked = state.isDarkMode
-            AppCompatDelegate.setDefaultNightMode(
-                if (state.isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
-                else AppCompatDelegate.MODE_NIGHT_NO
-            )
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setContent {
+                PlaylistMakerTheme {
+                    SettingsScreen(viewModel = viewModel)
+                }
+            }
         }
+    }
+}
 
-        binding.themeSwitcher.setOnCheckedChangeListener { _, checked ->
+@Composable
+fun SettingsScreen(viewModel: SettingsViewModel) {
+    val state by viewModel.getState().observeAsState()
+    val context = LocalContext.current
+
+    SettingsContent(
+        isDarkMode = state?.isDarkMode ?: false,
+        onThemeSwitchChanged = { checked ->
             viewModel.switchTheme(checked)
-        }
-
-        val activity = requireActivity()
-
-        binding.shareButton.setOnClickListener {
-            viewModel.shareApp(activity.getString(R.string.android_dev_link))
-        }
-
-        binding.supportButton.setOnClickListener {
+        },
+        onShareClick = {
+            viewModel.shareApp(context.getString(R.string.android_dev_link))
+        },
+        onSupportClick = {
             viewModel.contactSupport(EmailData(
-                arrayOf(activity.getString(R.string.my_email)),
-                activity.getString(R.string.support_mail_theme),
-                activity.getString(R.string.support_mail_body_content)
+                arrayOf(context.getString(R.string.my_email)),
+                context.getString(R.string.support_mail_theme),
+                context.getString(R.string.support_mail_body_content)
             ))
+        },
+        onAgreementClick = {
+            viewModel.openTerms(context.getString(R.string.user_agreement_link))
         }
-
-        binding.agreementButton.setOnClickListener {
-            viewModel.openTerms(activity.getString(R.string.user_agreement_link))
-        }
-    }
+    )
 }
